@@ -1,0 +1,85 @@
+* {
+  line-height: calc(1em + 0.5rem);
+}
+
+:root {
+  /* colours */
+  --clr-dark: #111827;
+  --clr-dark2: #292e39;
+  --clr-light: #ffffff;
+  --clr-light2: #b2c4dd;
+  --clr-gray: #d8dee9;
+  --clr-gray2: #e5e9f0;
+
+
+  /* sizes */
+  --size-xxs: 0.5rem;
+  --size-xs: 0.75rem;
+  --size-sm: 0.875rem;
+  --size-base: 1rem;
+  --size-lg: 1.125rem;
+  --size-xl: 1.25rem;
+  --size-2xl: 1.5rem;
+  --size-3xl: 1.875rem;
+  --size-4xl: 2.25rem;
+  --size-5xl: 3rem;
+  --size-6xl: 3.75rem;
+  --size-7xl: 4.5rem;
+  --size-8xl: 6rem;
+  --size-9xl: 8rem;
+  --size-10xl: 10rem;
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Rubik';
+}
+
+img,
+picture,
+canvas,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+  user-select: none;
+}
+
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #000;
+}
+
+th {
+  background-color: #e6f2ff;
+}
+
+tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+.highlighted {
+  background-color: #ffe5b4;
+}
+
+
+.row {
+  cursor: pointer;
+}
