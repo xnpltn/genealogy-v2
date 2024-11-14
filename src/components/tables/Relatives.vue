@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core';
-import { Relative } from '../../utils/types';
+import { RelativeIndividual } from '../../utils/types';
 import { onMounted, ref } from 'vue';
 
-const relatives = ref<Relative[]>([])
+const relatives = ref<RelativeIndividual[]>([])
 const fetching = ref(true)
 onMounted(() => {
-  invoke("test_serde").then(val => {
-    let relative: Relative = val as Relative
-    relatives.value.push(relative)
+  invoke("test_serde").then(() => {
+    //let relative: RelativeIndividual = val as RelativeIndividual
+    //relatives.value.push(relative)
     fetching.value = false
   })
 })
@@ -48,8 +48,8 @@ onMounted(() => {
           <td>{{ relative.email || "" }}</td>
           <td>{{ relative.pinned ? "pinned" : "not pinned" }}</td>
           <td>{{ relative.lostReason || "" }}</td>
-          <td>{{ relative.created || "" }}</td>
-          <td>{{ relative.updated || "" }}</td>
+          <td>{{ relative.createdAt || "" }}</td>
+          <td>{{ relative.updatedAt || "" }}</td>
         </tr>
       </tbody>
     </table>

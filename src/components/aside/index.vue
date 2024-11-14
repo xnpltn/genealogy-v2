@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Settings from '../icons/Settings.vue';
-//import Info from '../icons/Info.vue';
 import { inject, type Ref } from 'vue';
 const active_tab = inject<Ref<number>>("active_tab")
 </script>
@@ -20,7 +19,7 @@ const active_tab = inject<Ref<number>>("active_tab")
     </div>
 
     <div class="aside__info">
-      <button class="icon-btn " :class="{'setting-btn': active_tab == 4}" @click="active_tab = 4">
+      <button class="icon-btn " :class="{ 'setting-btn': active_tab == 4 }" @click="active_tab = 4">
         <Settings :height="32" :width="32" />
       </button>
     </div>
@@ -84,8 +83,8 @@ const active_tab = inject<Ref<number>>("active_tab")
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-.setting-btn{
- background-color: white !important; 
+.setting-btn {
+  background-color: white !important;
 }
 
 .icon-btn:hover {
