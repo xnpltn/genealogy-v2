@@ -11,10 +11,11 @@ function closeModal() {
 <template>
   <div class="modal" v-if="model_open">
     <div class="modal__container">
-      modal
-      <button @click="closeModal">Close</button>
+      <div>
+        <button @click="closeModal">Close</button>
+        <slot />
+      </div>
     </div>
-    <slot />
   </div>
 </template>
 
@@ -27,6 +28,7 @@ function closeModal() {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   top: 0;
   left: 0;
 

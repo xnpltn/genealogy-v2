@@ -12,17 +12,22 @@ const active_tab = inject<Ref<number>>("active_tab")
         <button :class="{ 'active': active_tab == 1 }" class="btn" @click="active_tab = 1">Females</button>
         <button :class="{ 'active': active_tab == 2 }" class="btn" @click="active_tab = 2">Employees</button>
       </div>
+      <!--
       <hr>
       <div class="aside__tabs">
         <button :class="{ 'active': active_tab == 3 }" class="btn" @click="active_tab = 3">Add New</button>
       </div>
+      -->
     </div>
 
+    <!-- 
     <div class="aside__info">
       <button class="icon-btn " :class="{ 'setting-btn': active_tab == 4 }" @click="active_tab = 4">
         <Settings :height="32" :width="32" />
       </button>
     </div>
+
+    -->
   </div>
 </template>
 
@@ -32,22 +37,21 @@ const active_tab = inject<Ref<number>>("active_tab")
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
+  width: 100vw;
   position: fixed;
-  height: 100vh;
+  height: var(--size-6xl);
   background-color: var(--clr-light2);
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  padding-top: var(--size-sm);
+  padding: var(--size-sm);
 }
 
 
 .aside__tabs {
-  padding: var(--size-sm);
   gap: var(--size-sm);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .aside__info {

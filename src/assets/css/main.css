@@ -37,6 +37,7 @@ html {
 
 body {
   font-family: 'Rubik';
+  max-height: calc(100vh - 10%);
 }
 
 img,
@@ -47,6 +48,10 @@ svg {
   display: block;
   max-width: 100%;
   user-select: none;
+}
+
+.container {
+  padding: var(--size-sm);
 }
 
 

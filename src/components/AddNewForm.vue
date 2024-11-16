@@ -37,6 +37,7 @@ function save() {
       <label for="middleName">Middle Name:</label>
       <input type="text" v-model="newRelative.middleName" id="middleName" name="middleName">
 
+      <label for="sex">Sex:</label>
       <select name="sex" id="sex" v-model="newRelative.sex">
         <option value="male">Male</option>
         <option value="female">Female</option>
@@ -65,20 +66,28 @@ function save() {
       <label for="lostReason">Lost Reason:</label>
       <textarea id="lostReason" name="lostReason" v-model="newRelative.lostReason"></textarea>
 
-      <label for="swarthy">Swarthy:</label>
-      <input type="number" id="swarthy" name="swarthy" v-model="newRelative.swarthy" step="1" min="0" max="10"
-        value="0">
+      <div v-if="newRelative.sex == 'female'">
+        <label for="swarthy">Swarthy:</label>
+        <input type="number" id="swarthy" name="swarthy" v-model="newRelative.swarthy" step="1" min="0" max="10"
+          value="0">
+      </div>
 
-      <label for="hotness">Hotness:</label>
-      <input type="number" id="hotness" name="hotness" v-model="newRelative.hotness" step="1" min="0" max="10"
-        value="0">
+      <div v-if="newRelative.sex == 'female'">
+        <label for="hotness">Hotness:</label>
+        <input type="number" id="hotness" name="hotness" v-model="newRelative.hotness" step="1" min="0" max="10"
+          value="0">
+      </div>
 
-      <label for="crazy">Crazy:</label>
-      <input type="number" id="crazy" name="crazy" v-model="newRelative.crazy" step="1" min="0" max="10" value="0">
+      <div v-if="newRelative.sex == 'female'">
+        <label for="crazy">Crazy:</label>
+        <input type="number" id="crazy" name="crazy" v-model="newRelative.crazy" step="1" min="0" max="10" value="0">
+      </div>
 
-      <label for="employable">Employable:</label>
-      <input type="number" id="employable" v-model="newRelative.employable" name="employable" step="1" min="0" max="10"
-        value="0">
+      <div v-if="newRelative.sex == 'male'">
+        <label for="employable">Employable:</label>
+        <input type="number" id="employable" v-model="newRelative.employable" name="employable" step="1" min="0"
+          max="10" value="0">
+      </div>
       <button type="submit">Submit</button>
     </form>
 
@@ -86,7 +95,7 @@ function save() {
 </template>
 
 
-<style scoped>
+<style>
 form {
   background-color: #fff;
   padding: 20px;

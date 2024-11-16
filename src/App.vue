@@ -7,14 +7,18 @@ import Employees from "./components/tables/Employees.vue";
 import Modal from "./components/Modal.vue";
 import About from "./components/About.vue";
 import AddNewForm from "./components/AddNewForm.vue";
-
-let text = ref("")
+import NoteSection from "./components/NoteSection.vue";
 
 const active_tab: Ref<number> = ref(0)
 provide("active_tab", active_tab)
 
 const model_open = ref(false)
+const showNotes = ref(true)
+provide("showNotes", showNotes)
 
+
+const active_relative_id = ref<number>(0);
+provide("active_relative_id", active_relative_id);
 //function open_modal() {
 //  model_open.value = !model_open.value
 //}
@@ -28,6 +32,7 @@ const model_open = ref(false)
   <Modal :model_open="model_open" @close-modal="model_open = false" />
   <main class="container">
     <Aside />
+    <NoteSection v-if="active_relative_id > 0 && showNotes" />
     <div class="main">
 
       <!--
@@ -36,7 +41,7 @@ const model_open = ref(false)
       <button @click="test"> Click Me</button>
       <button @click="open_modal"> Open Modal</button>
       -->
-      <h1>{{ text }}</h1>
+
       <div v-if="active_tab == 0">
         <Relatives />
       </div>
@@ -59,7 +64,6 @@ const model_open = ref(false)
 
 <style scoped>
 .main {
-
-  margin-left: 300px;
+  margin-top: calc(var(--size-6xl) + var(--size-sm));
 }
 </style>

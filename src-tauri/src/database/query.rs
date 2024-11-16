@@ -87,17 +87,14 @@ END;
 
 -- Table file to store files related to relative
 CREATE TABLE IF NOT EXISTS file (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    imported_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
-    imported_name       TEXT NOT NULL,
-    imported_hash       TEXT NOT NULL,
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updates_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
+    file_name           TEXT NOT NULL,
+    file_path           TEXT NOT NULL,
     relative_id         INTEGER  NOT NULL,
     type                TEXT NOT NULL,
     size                TEXT NOT NULL,
-    filename            TEXT NOT NULL,
-    filename_timestamp  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    filename_hashname   TEXT NOT NULL,
-    file_directory      TEXT NOT NULL,
     pinned              BOOLEAN DEFAULT 0,
     FOREIGN KEY         (relative_id) REFERENCES relative(id) ON DELETE CASCADE
 );
@@ -107,7 +104,7 @@ CREATE TRIGGER IF NOT EXISTS update_files_updated_at
 AFTER UPDATE ON file
 FOR EACH ROW
 BEGIN 
-  UPDATE file SET filename_timestamp = CURRENT_TIMESTAMP WHERE id = OLD.id;
+  UPDATE file SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
 END;
 
 -- Table to store notes related to relative

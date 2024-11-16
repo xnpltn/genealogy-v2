@@ -1,17 +1,39 @@
 <script setup lang="ts">
+//import UpdateForm from '../UpdateForm.vue';
+//import Modal from '../Modal.vue';
 import { invoke } from '@tauri-apps/api/core';
 import { RelativeIndividual } from '../../utils/types';
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, type Ref, ref } from 'vue';
 
-const relatives = ref<RelativeIndividual[]>([])
+const relatives: Ref<Array<RelativeIndividual>> = ref([])
 const fetching = ref(true)
+const active_relative_id = inject("active_relative_id") as Ref<number, number>;
+const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
 onMounted(() => {
-  invoke("test_serde").then(() => {
-    //let relative: RelativeIndividual = val as RelativeIndividual
-    //relatives.value.push(relative)
+  invoke("all_relatives").then((val) => {
+    relatives.value = val as Array<RelativeIndividual>;
     fetching.value = false
+  }).catch((e) => {
+    if (e instanceof Error) {
+      console.log(e.message, e.name, e.stack)
+    } else {
+      console.log(e)
+    }
   })
 })
+
+function open_update_modal(id: number) {
+  active_relative_id.value = id
+  console.log(active_relative_id.value)
+}
+
+
+function toggleNoteSection(id: number) {
+  active_relative_id.value = id
+  showNotes.value = true
+}
+
+
 
 </script>
 
@@ -20,6 +42,10 @@ onMounted(() => {
     Relatives
   </h1>
 
+  <!--<Modal @close-modal="model_open = false" :model_open="model_open">
+    <UpdateForm :relative="active_relative" />
+  </Modal>
+-->
   <div class="table-container" v-if="!fetching">
     <table>
       <thead>
@@ -38,8 +64,8 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="relative in relatives">
-          <td>{{ relative.name }}</td>
+        <tr v-for="relative in relatives" :key="relative.id" @click="toggleNoteSection(relative.id)">
+          <td>{{ relative.firstName + ' ' + relative.lastName }}</td>
           <td>{{ relative.age || "" }}</td>
           <td> {{ relative.sameness || 0 }}</td>
           <td>{{ relative.mother || "" }}</td>
@@ -50,6 +76,9 @@ onMounted(() => {
           <td>{{ relative.lostReason || "" }}</td>
           <td>{{ relative.createdAt || "" }}</td>
           <td>{{ relative.updatedAt || "" }}</td>
+          <td>
+            <button style="text-decoration: underline;" @click="open_update_modal(relative.id)">details</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -88,5 +117,9 @@ tr:nth-child(even) td {
 
 .highlighted {
   background-color: #ffe5b4;
+}
+
+tr {
+  cursor: pointer;
 }
 </style>

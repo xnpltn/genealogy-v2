@@ -1,4 +1,26 @@
-<script setup>
+<script setup lang="ts">
+import { invoke, } from '@tauri-apps/api/core';
+import { onMounted, type Ref, ref, inject } from 'vue';
+import { RelativeIndividual } from '../../utils/types';
+
+const relatives: Ref<Array<RelativeIndividual>> = ref([])
+const active_relative_id = inject("active_relative_id") as Ref<number, number>;
+const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
+
+onMounted(() => {
+  invoke("all_females").then(val => {
+    console.log(val)
+    const females = val as Array<RelativeIndividual>
+    relatives.value = females
+
+  })
+})
+
+
+function toggleNoteSection(id: number) {
+  active_relative_id.value = id
+  showNotes.value = true
+}
 
 </script>
 
@@ -28,21 +50,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="row">
-          <td>Eliza Doolittle</td>
-          <td>23</td>
-          <td>.03</td>
-          <td> 10</td>
-          <td> 9</td>
-          <td> 8</td>
-          <td>Unknown</td>
-          <td>Unknown</td>
-          <td>NULL</td>
-          <td>Eliza@doolittle.net</td>
-          <td>True</td>
-          <td>NONE</td>
-          <td></td>
-          <td></td>
+        <tr v-for="relative in relatives" :key="relative.id" @click="toggleNoteSection(relative.id)">
+          <td>{{ relative.firstName + ' ' + relative.lastName }}</td>
+          <td>{{ relative.age || "" }}</td>
+          <td> {{ relative.sameness || 0 }}</td>
+          <td> {{ relative.swarthy || 0 }}</td>
+          <td> {{ relative.hotness || 0 }}</td>
+          <td> {{ relative.crazy || 0 }}</td>
+          <td>{{ relative.mother || "" }}</td>
+          <td>{{ relative.father || "" }}</td>
+          <td>{{ relative.phone || "" }}</td>
+          <td>{{ relative.email || "" }}</td>
+          <td>{{ relative.pinned ? "pinned" : "not pinned" }}</td>
+          <td>{{ relative.lostReason || "" }}</td>
+          <td>{{ relative.createdAt || "" }}</td>
+          <td>{{ relative.updatedAt || "" }}</td>
         </tr>
       </tbody>
     </table>

@@ -2,18 +2,27 @@ use serde::{self, Deserialize, Serialize};
 use sqlx::{prelude::FromRow, SqlitePool};
 use std::sync::Arc;
 
+pub mod file;
+pub mod note;
+
 pub struct State {
     pub pool: Arc<SqlitePool>,
+    pub files_dir: String,
+    pub images_dir: String,
 }
 
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RelativeIndividual {
     pub id: u16,
+    #[sqlx(rename = "fname")]
     pub first_name: String,
+    #[sqlx(rename = "mname")]
     pub middle_name: Option<String>,
+    #[sqlx(rename = "lname")]
     pub last_name: String,
     pub birthday: Option<String>,
+    pub age: Option<u8>,
     pub sameness: Option<f32>,
     #[sqlx(skip)]
     pub mother: Option<String>,
