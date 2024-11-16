@@ -5,43 +5,31 @@ import Females from "./components/tables/Females.vue";
 import Relatives from "./components/tables/Relatives.vue";
 import Employees from "./components/tables/Employees.vue";
 import Modal from "./components/Modal.vue";
-import About from "./components/About.vue";
+import EditForm from "./components/EditForm.vue";
 import AddNewForm from "./components/AddNewForm.vue";
 import NoteSection from "./components/NoteSection.vue";
 
+const model_open = ref(false)
 const active_tab: Ref<number> = ref(0)
 provide("active_tab", active_tab)
 
-const model_open = ref(false)
 const showNotes = ref(true)
 provide("showNotes", showNotes)
 
+const hasActiveRelative = ref(false)
+provide("hasActiveRelative", hasActiveRelative)
 
 const active_relative_id = ref<number>(0);
 provide("active_relative_id", active_relative_id);
-//function open_modal() {
-//  model_open.value = !model_open.value
-//}
-
-
 
 </script>
 
 <template>
-
   <Modal :model_open="model_open" @close-modal="model_open = false" />
   <main class="container">
     <Aside />
-    <NoteSection v-if="active_relative_id > 0 && showNotes" />
+    <NoteSection v-if="active_relative_id > 0 && showNotes && hasActiveRelative" />
     <div class="main">
-
-      <!--
-      <h1>Hello wolrd</h1>
-      <h1>{{ newRelative.name }}</h1>
-      <button @click="test"> Click Me</button>
-      <button @click="open_modal"> Open Modal</button>
-      -->
-
       <div v-if="active_tab == 0">
         <Relatives />
       </div>
@@ -55,15 +43,8 @@ provide("active_relative_id", active_relative_id);
         <AddNewForm />
       </div>
       <div v-if="active_tab == 4">
-        <About />
+        <EditForm />
       </div>
     </div>
-
   </main>
 </template>
-
-<style scoped>
-.main {
-  margin-top: calc(var(--size-6xl) + var(--size-sm));
-}
-</style>

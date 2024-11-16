@@ -5,11 +5,12 @@ import { inject } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import Modal from './Modal.vue';
 import { CreateNoteParams, Note, UpdateNoteParams } from '../utils/notes';
-import { CreateFileParams } from '../utils/file';
+import { CreateFileParams, File } from '../utils/file';
 
 const showNotes = inject<Ref<Boolean>>("showNotes");
 const active_relative_id = inject("active_relative_id") as Ref<number, number>
 const notes: Ref<Note[], Note[]> = ref([])
+const files: Ref<File[], File[]> = ref([])
 
 watchEffect(() => {
   invoke("notes_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
@@ -23,8 +24,9 @@ watchEffect(() => {
     }
   })
 
-  invoke("files_by_relative_id", { activeRelativeId: active_relative_id.value }).then(() => {
-    console.log("files ")
+  invoke("files_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
+    files.value = val as Array<File>
+    console.log(val)
   }).catch(e => {
     if (e instanceof Error) {
       console.log(e.message, e.stack, e.name)
@@ -102,7 +104,18 @@ function openFile() {
   }).then((file) => {
     if (file) {
       let params: CreateFileParams = { filePath: file, relativeId: active_relative_id.value }
-      invoke("create_file", { params }).catch(e => {
+      invoke("create_file", { params }).then(() => {
+        invoke("files_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
+          files.value = val as Array<File>
+          console.log(val)
+        }).catch(e => {
+          if (e instanceof Error) {
+            console.log(e.message, e.stack, e.name)
+          } else {
+            console.log(e)
+          }
+        })
+      }).catch(e => {
         console.log(e)
       })
     }
@@ -172,8 +185,21 @@ function openFile() {
     </div>
     <div class="notes__container files" v-if="sectionToShow == 1">
       <div class="tables">
-        <div class="notes">
-          files {{ active_relative_id }}
+        <div class="files">
+          <table>
+            <thead>
+              <tr>
+                <th>file name</th>
+                <th>file type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="file in files" class="note__row" :key="file.id">
+                <td>{{ file.fileName }}</td>
+                <td>{{ file.type }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <div class="preview">

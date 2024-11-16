@@ -127,7 +127,29 @@ pub async fn notes_by_relative_id(
 }
 
 #[tauri::command]
-pub async fn files_by_relative_id(app: AppHandle, active_relative_id: u32) -> Result<(), String> {
-    println!("get files for:  {active_relative_id}");
-    Ok(())
+pub async fn files_by_relative_id(
+    app: AppHandle,
+    active_relative_id: u32,
+) -> Result<Vec<types::file::File>, String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    let files: Vec<types::file::File> = sqlx::query_as(
+        r#"
+            SELECT 
+                id, file_name, file_path, type, size, pinned
+            FROM 
+                file 
+            WHERE 
+                relative_id = $1;
+        "#,
+    )
+    .bind(active_relative_id)
+    .fetch_all(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("{}", e.to_string());
+        e.to_string()
+    })?;
+
+    Ok(files)
 }

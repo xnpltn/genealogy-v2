@@ -25,12 +25,12 @@ pub struct CreateFileParams {
 
 export type File = {
   id: number
-  file_name: string
-  file_path: string
+  fileName: string
+  filePath: string
   size: number
   type: string
   pinned: boolean
-  created_at: string
+  createdAt: string
 }
 
 export type CreateFileParams = {

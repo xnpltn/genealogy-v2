@@ -7,6 +7,7 @@ import { RelativeIndividual } from '../../utils/types';
 const relatives: Ref<Array<RelativeIndividual>> = ref([])
 const active_relative_id = inject("active_relative_id") as Ref<number, number>;
 const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
+const hasActiveRelative = inject("hasActiveRelative") as Ref<boolean, boolean>
 
 onMounted(() => {
   invoke("all_employees").then(val => {
@@ -21,6 +22,7 @@ onMounted(() => {
 function toggleNoteSection(id: number) {
   active_relative_id.value = id
   showNotes.value = true
+  hasActiveRelative.value = true
 }
 
 </script>

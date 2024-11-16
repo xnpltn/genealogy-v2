@@ -1,4 +1,4 @@
-use std::{ops::Deref, path::Path};
+use std::{fs, ops::Deref, path::Path};
 use tauri::{AppHandle, Manager};
 
 use crate::types;
@@ -12,14 +12,15 @@ pub async fn create_relative(
     let pool = state.pool.clone();
     sqlx::query(
         r#"
-    INSERT INTO relative (
-        sameness, lost_reason,  sex, birthday, fname, mname, lname, 
-        phone, email, pinned, hotness, 
-        crazy, swarthy, employable
-    ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14
-    );
+        INSERT INTO relative (
+            sameness, lost_reason,  sex, birthday, fname, mname, lname, 
+            phone, email, pinned, hotness, 
+            crazy, swarthy, employable
+        ) 
+        VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+            $11, $12, $13, $14
+        );
     "#,
     )
     .bind(new_relative.sameness)
@@ -72,20 +73,6 @@ pub async fn create_note(
     Ok(())
 }
 
-/*
-
-
-CREATE TABLE IF NOT EXISTS file (
-    file_name           TEXT NOT NULL,
-    file_path           TEXT NOT NULL,
-    relative_id         INTEGER  NOT NULL,
-    type                TEXT NOT NULL,
-    size                TEXT NOT NULL,
-    pinned              BOOLEAN DEFAULT 0,
-    FOREIGN KEY         (relative_id) REFERENCES relative(id) ON DELETE CASCADE
-);
-
-*/
 #[tauri::command]
 pub async fn create_file(
     app: AppHandle,
@@ -94,25 +81,48 @@ pub async fn create_file(
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
     let file = Path::new(&params.file_path);
-    let mut file_size = 0;
-    sqlx::query(
-        r#"
-        INSERT INTO 
-            file (file_name, file_path, relative_id, type)
-        VALUES
-            ($1, $2, $3, $4)
-    "#,
-    )
-    .bind(file.file_name().unwrap().to_str().unwrap().to_string())
-    .bind(file.to_str().unwrap().to_string())
-    .bind(params.relative_id)
-    .bind(file.extension().unwrap().to_str().unwrap().to_string())
-    .bind(file_size)
-    .execute(pool.deref())
-    .await
-    .map_err(|e| {
-        println!("error adding file: {}", e.to_string());
-        e.to_string()
-    })?;
+
+    let mut file_size: u32 = 0;
+    match fs::copy(
+        Path::new(&params.file_path),
+        Path::new(&std::format!(
+            "{}/{}-{}",
+            state.files_dir,
+            params.relative_id,
+            file.file_name().unwrap().to_str().unwrap().to_string()
+        )),
+    ) {
+        Ok(n) => {
+            file_size += n as u32;
+            sqlx::query(
+                r#"
+                    INSERT INTO 
+                        file (file_name, file_path, relative_id, type, size)
+                    VALUES
+                        ($1, $2, $3, $4, $5)
+                "#,
+            )
+            .bind(file.file_name().unwrap().to_str().unwrap().to_string())
+            .bind(std::format!(
+                "{}/{}-{}",
+                state.files_dir,
+                params.relative_id,
+                file.file_name().unwrap().to_str().unwrap().to_string()
+            ))
+            .bind(params.relative_id)
+            .bind(file.extension().unwrap().to_str().unwrap().to_string())
+            .bind(file_size)
+            .execute(pool.deref())
+            .await
+            .map_err(|e| {
+                println!("error adding file: {}", e.to_string());
+                e.to_string()
+            })?;
+        }
+        Err(e) => {
+            println!("error : {}", e.to_string());
+            return Err(e.to_string());
+        }
+    }
     Ok(())
 }

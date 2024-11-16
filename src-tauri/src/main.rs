@@ -3,6 +3,6 @@
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    genalogy_v2_lib::run().await?;
+    genealogy_v2_lib::run().await?;
     Ok(())
 }

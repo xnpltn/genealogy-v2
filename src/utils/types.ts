@@ -1,4 +1,6 @@
 export type RelativeIndividual = {
+  sex: string,
+  birthday: string,
   firstName: string;
   middleName?: string;
   lastName: string;

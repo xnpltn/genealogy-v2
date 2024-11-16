@@ -7,9 +7,11 @@ pub struct File {
     pub id: u8,
     pub file_name: String,
     pub file_path: String,
+    #[sqlx(skip)]
     pub size: u32,
     pub r#type: String,
     pub pinned: bool,
+    #[sqlx(skip)]
     pub created_at: String,
 }
 

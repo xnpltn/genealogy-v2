@@ -9,6 +9,7 @@ const relatives: Ref<Array<RelativeIndividual>> = ref([])
 const fetching = ref(true)
 const active_relative_id = inject("active_relative_id") as Ref<number, number>;
 const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
+const hasActiveRelative = inject("hasActiveRelative") as Ref<boolean, boolean>
 onMounted(() => {
   invoke("all_relatives").then((val) => {
     relatives.value = val as Array<RelativeIndividual>;
@@ -22,13 +23,14 @@ onMounted(() => {
   })
 })
 
-function open_update_modal(id: number) {
-  active_relative_id.value = id
-  console.log(active_relative_id.value)
-}
+//function open_update_modal(id: number) {
+//  active_relative_id.value = id
+//  console.log(active_relative_id.value)
+//}
 
 
 function toggleNoteSection(id: number) {
+  hasActiveRelative.value = true
   active_relative_id.value = id
   showNotes.value = true
 }
@@ -76,9 +78,6 @@ function toggleNoteSection(id: number) {
           <td>{{ relative.lostReason || "" }}</td>
           <td>{{ relative.createdAt || "" }}</td>
           <td>{{ relative.updatedAt || "" }}</td>
-          <td>
-            <button style="text-decoration: underline;" @click="open_update_modal(relative.id)">details</button>
-          </td>
         </tr>
       </tbody>
     </table>

@@ -41,6 +41,7 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
             .plugin(tauri_plugin_shell::init())
             .invoke_handler(tauri::generate_handler![
                 commands::create::create_relative,
+                commands::update::update_relative,
                 commands::read::all_relatives,
                 commands::read::relative_by_id,
                 commands::read::all_females,
@@ -49,7 +50,7 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 commands::read::files_by_relative_id,
                 commands::create::create_note,
                 commands::delete::delete_note,
-                commands::update::edit_note,
+                commands::update::update_note,
                 commands::create::create_file,
             ])
             .setup(move |app| {

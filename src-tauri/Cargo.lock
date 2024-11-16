@@ -1285,7 +1285,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "genalogy-v2"
+name = "genealogy"
 version = "0.1.0"
 dependencies = [
  "chrono",
