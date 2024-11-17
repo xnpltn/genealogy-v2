@@ -3,9 +3,11 @@ import { invoke, } from '@tauri-apps/api/core';
 import { onMounted, type Ref, ref, inject } from 'vue';
 import { RelativeIndividual } from '../../utils/types';
 
+import { useStateStore } from '../../store/state';
+
+const stateStore = useStateStore()
+
 const relatives: Ref<Array<RelativeIndividual>> = ref([])
-const active_relative_id = inject("active_relative_id") as Ref<number, number>;
-const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
 const hasActiveRelative = inject("hasActiveRelative") as Ref<boolean, boolean>
 
 onMounted(() => {
@@ -19,8 +21,8 @@ onMounted(() => {
 
 
 function toggleNoteSection(id: number) {
-  active_relative_id.value = id
-  showNotes.value = true
+  stateStore.changeActiveRelativeId(id)
+  stateStore.setShowNotesToTrue()
   hasActiveRelative.value = true
 }
 

@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { inject, type Ref } from 'vue';
-const active_tab = inject<Ref<number>>("active_tab")
-const hasActiveRelative = inject<Ref<boolean>>("hasActiveRelative")
-const showNotes = inject("showNotes") as Ref<boolean, boolean>
+import { useStateStore } from '../../store/state';
+
+const stateStore = useStateStore()
 </script>
 
 <template>
   <div class="aside">
     <div class="aside__tabs">
-      <button :class="{ 'active': active_tab == 0 }" class="btn"
-        @click="active_tab = 0; hasActiveRelative = false">Relatives</button>
-      <button :class="{ 'active': active_tab == 1 }" class="btn"
-        @click="active_tab = 1; hasActiveRelative = false">Females</button>
-      <button :class="{ 'active': active_tab == 2 }" class="btn"
-        @click="active_tab = 2; hasActiveRelative = false">Employees</button>
+      <button :class="{ 'active': stateStore.activeTab == 0 }" class="btn"
+        @click="stateStore.changeActiveTab(0); stateStore.setShowNotesToFalse()">Relatives</button>
+      <button :class="{ 'active': stateStore.activeTab == 1 }" class="btn"
+        @click="stateStore.changeActiveTab(1); stateStore.setShowNotesToFalse()">Females</button>
+      <button :class="{ 'active': stateStore.activeTab == 2 }" class="btn"
+        @click="stateStore.changeActiveTab(2); stateStore.setShowNotesToFalse()">Employees</button>
     </div>
     <div>
-      <button class="editButton" @click="active_tab = 4; showNotes = false" v-if="hasActiveRelative">Edit</button>
-      <button class="editButton" @click="active_tab = 3">new relative</button>
+      <button class="editButton" @click="stateStore.changeActiveTab(4); stateStore.setShowNotesToFalse()"
+        v-if="stateStore.hasActiveRelative">Edit</button>
+      <button class="editButton" @click="stateStore.changeActiveTab(3); stateStore.setShowNotesToFalse()">new
+        relative</button>
     </div>
   </div>
 </template>

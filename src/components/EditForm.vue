@@ -1,13 +1,15 @@
 <script setup lang="ts">
 
-import { inject, onMounted, type Ref, ref } from 'vue';
+import { onMounted, type Ref, ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { RelativeIndividual } from '../utils/types';
-const activeRelativeId = inject("active_relative_id") as Ref<number, number>
+import { useStateStore } from '../store/state';
 const activeRelative = ref({}) as Ref<RelativeIndividual, RelativeIndividual>
+const stateStore = useStateStore()
 
 onMounted(() => {
-  invoke("relative_by_id", { id: activeRelativeId.value }).then((val) => {
+  console.log(stateStore.activeRelativeId)
+  invoke("relative_by_id", { id: stateStore.activeRelativeId }).then((val) => {
     activeRelative.value = val as RelativeIndividual
   }).catch(e => {
     console.log(e)

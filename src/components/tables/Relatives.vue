@@ -3,13 +3,13 @@
 //import Modal from '../Modal.vue';
 import { invoke } from '@tauri-apps/api/core';
 import { RelativeIndividual } from '../../utils/types';
-import { inject, onMounted, type Ref, ref } from 'vue';
+import { onMounted, type Ref, ref } from 'vue';
+import { useStateStore } from '../../store/state';
+
+const stateStore = useStateStore()
 
 const relatives: Ref<Array<RelativeIndividual>> = ref([])
 const fetching = ref(true)
-const active_relative_id = inject("active_relative_id") as Ref<number, number>;
-const showNotes = inject<Ref<Boolean>>("showNotes") as Ref<boolean, boolean>;
-const hasActiveRelative = inject("hasActiveRelative") as Ref<boolean, boolean>
 onMounted(() => {
   invoke("all_relatives").then((val) => {
     relatives.value = val as Array<RelativeIndividual>;
@@ -30,9 +30,8 @@ onMounted(() => {
 
 
 function toggleNoteSection(id: number) {
-  hasActiveRelative.value = true
-  active_relative_id.value = id
-  showNotes.value = true
+  stateStore.changeActiveRelativeId(id)
+  stateStore.setShowNotesToTrue()
 }
 
 

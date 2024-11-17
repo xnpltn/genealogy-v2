@@ -1,126 +1,39 @@
 <script setup lang="ts">
-import { open } from '@tauri-apps/plugin-dialog';
-import { reactive, ref, watchEffect, type Ref } from 'vue';
-import { inject } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
+import { reactive, ref, watchEffect } from 'vue';
 import Modal from './Modal.vue';
-import { CreateNoteParams, Note, UpdateNoteParams } from '../utils/notes';
-import { CreateFileParams, File } from '../utils/file';
+import { CreateNoteParams } from '../utils/notes';
+import { useStateStore } from '../store/state';
+import { useNotesStore } from '../store/notes';
+import { useFilesStore } from '../store/files';
 
-const showNotes = inject<Ref<Boolean>>("showNotes");
-const active_relative_id = inject("active_relative_id") as Ref<number, number>
-const notes: Ref<Note[], Note[]> = ref([])
-const files: Ref<File[], File[]> = ref([])
+const stateStore = useStateStore()
+const notesStore = useNotesStore()
+const filesStore = useFilesStore()
+
 
 watchEffect(() => {
-  invoke("notes_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-    console.log(val)
-    notes.value = val as Array<Note>;
-  }).catch(e => {
-    if (e instanceof Error) {
-      console.log(e.message, e.stack, e.name)
-    } else {
-      console.log(e)
-    }
-  })
-
-  invoke("files_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-    files.value = val as Array<File>
-    console.log(val)
-  }).catch(e => {
-    if (e instanceof Error) {
-      console.log(e.message, e.stack, e.name)
-    } else {
-      console.log(e)
-    }
-  })
+  notesStore.getNotes(stateStore.activeRelativeId)
+  filesStore.getFiles(stateStore.activeRelativeId)
 })
 
-const sectionToShow = ref(0)
 const showAddNoteModal = ref(false)
 const createNotesParams = reactive<Partial<CreateNoteParams>>({})
 
 function createNote() {
-  invoke("create_note", { params: { pinned: createNotesParams.pinned ? true : false, text: createNotesParams.text, relative_id: active_relative_id.value } }).then(() => {
-    invoke("notes_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-      console.log(val)
-      notes.value = val as Array<Note>;
-    }).catch(e => {
-      if (e instanceof Error) {
-        console.log(e.message, e.stack, e.name)
-      } else {
-        console.log(e)
-      }
-    })
-
-  }).catch(e => {
-    console.log(e)
-  })
+  notesStore.createNote(createNotesParams, stateStore.activeRelativeId)
 }
 
-const selectedNote = ref<Partial<Note>>({})
 
 function saveEditedNote() {
-  let editedNote: UpdateNoteParams = { pinned: selectedNote.value.pinned ? true : false, text: selectedNote.value.text as string, id: selectedNote.value.id as number }
-  invoke("edit_note", { editedNote }).then(() => {
-    invoke("notes_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-      console.log(val)
-      notes.value = val as Array<Note>;
-    }).catch(e => {
-      if (e instanceof Error) {
-        console.log(e.message, e.stack, e.name)
-      } else {
-        console.log(e)
-      }
-    })
-  }).catch(e => {
-    console.log(e)
-  })
+  notesStore.saveEditedNote(stateStore.activeRelativeId)
 }
 
-
 function deleteEdtitedNote(id: number) {
-  invoke("delete_note", { noteId: id }).then(() => {
-    invoke("notes_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-      console.log(val)
-      notes.value = val as Array<Note>;
-    }).catch(e => {
-      if (e instanceof Error) {
-        console.log(e.message, e.stack, e.name)
-      } else {
-        console.log(e)
-      }
-    })
-    selectedNote.value = {}
-  }).catch(e => {
-    console.log(e)
-  })
+  notesStore.deleteNote(id, stateStore.activeRelativeId)
 }
 
 function openFile() {
-  open({
-    multiple: false,
-    directory: false,
-  }).then((file) => {
-    if (file) {
-      let params: CreateFileParams = { filePath: file, relativeId: active_relative_id.value }
-      invoke("create_file", { params }).then(() => {
-        invoke("files_by_relative_id", { activeRelativeId: active_relative_id.value }).then((val) => {
-          files.value = val as Array<File>
-          console.log(val)
-        }).catch(e => {
-          if (e instanceof Error) {
-            console.log(e.message, e.stack, e.name)
-          } else {
-            console.log(e)
-          }
-        })
-      }).catch(e => {
-        console.log(e)
-      })
-    }
-    console.log(file);
-  });
+  filesStore.createFile(stateStore.activeRelativeId)
 }
 
 </script>
@@ -144,14 +57,13 @@ function openFile() {
     <div class="tabbar">
 
       <div>
-        <button @click="sectionToShow = 0">Notes</button>
-        <button @click="sectionToShow = 1">files</button>
+        <button @click="notesStore.changeSection(0)">Notes</button>
+        <button @click="notesStore.changeSection(1)">files</button>
       </div>
-      <button @click="showNotes = false">Close</button>
-
+      <button @click="stateStore.setShowNotesToFalse()">Close</button>
     </div>
 
-    <div class="notes__container notes" v-if="sectionToShow == 0">
+    <div class="notes__container notes" v-if="notesStore.section == 0">
       <div class="tables">
         <div class="notes">
           <table>
@@ -162,7 +74,8 @@ function openFile() {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="note in notes" class="note__row" @click="selectedNote = note" :key="note.id">
+              <tr v-for="note in notesStore.notes" class="note__row" @click="notesStore.activeNote = note"
+                :key="note.id">
                 <td>{{ note.text }}</td>
                 <td>{{ note.pinned }}</td>
               </tr>
@@ -174,16 +87,17 @@ function openFile() {
       <div class="preview">
         preview notes
         <button @click="showAddNoteModal = true">add note</button>
-        <div v-if="selectedNote.id">
-          <textarea name="edit-note" id="edit-note" v-model="selectedNote.text"></textarea>
-          <button @click="selectedNote.pinned = !selectedNote.pinned">{{ selectedNote.pinned ? "Unpin" : "Pin"
+        <div v-if="notesStore.activeNote.id">
+          <textarea name="edit-note" id="edit-note" v-model="notesStore.activeNote.text"></textarea>
+          <button @click="notesStore.activeNote.pinned = !notesStore.activeNote.pinned">{{ notesStore.activeNote.pinned
+            ? "Unpin" : "Pin"
             }}</button>
           <button @click="saveEditedNote">Save</button>
-          <button @click="deleteEdtitedNote(selectedNote.id)">delete</button>
+          <button @click="deleteEdtitedNote(notesStore.activeNote.id)">delete</button>
         </div>
       </div>
     </div>
-    <div class="notes__container files" v-if="sectionToShow == 1">
+    <div class="notes__container files" v-if="notesStore.section == 1">
       <div class="tables">
         <div class="files">
           <table>
@@ -194,7 +108,7 @@ function openFile() {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="file in files" class="note__row" :key="file.id">
+              <tr v-for="file in filesStore.files" class="note__row" :key="file.id">
                 <td>{{ file.fileName }}</td>
                 <td>{{ file.type }}</td>
               </tr>
