@@ -25,3 +25,25 @@ pub async fn delete_note(app: AppHandle, note_id: u32) -> Result<(), String> {
     println!("{note_id}");
     Ok(())
 }
+
+#[tauri::command]
+pub async fn delete_file(app: AppHandle, file_id: u32) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        DELETE FROM 
+            file 
+        WHERE
+            id= $1
+    "#,
+    )
+    .bind(file_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error deleting: {}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(())
+}

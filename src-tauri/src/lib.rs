@@ -42,6 +42,8 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
             .invoke_handler(tauri::generate_handler![
                 commands::create::create_relative,
                 commands::update::update_relative,
+                commands::read::male_parents,
+                commands::read::female_parents,
                 commands::read::all_relatives,
                 commands::read::relative_by_id,
                 commands::read::all_females,
@@ -52,6 +54,7 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 commands::delete::delete_note,
                 commands::update::update_note,
                 commands::create::create_file,
+                commands::delete::delete_file,
             ])
             .setup(move |app| {
                 app.manage(types::State {

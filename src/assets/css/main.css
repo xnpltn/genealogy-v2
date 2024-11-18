@@ -53,38 +53,3 @@ svg {
 .container {
   padding: var(--size-sm);
 }
-
-
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-th,
-td {
-  padding: 10px;
-  border: 1px solid #000;
-}
-
-th {
-  background-color: #e6f2ff;
-}
-
-tr:nth-child(even) td {
-  background-color: #f9f9f9;
-}
-
-.highlighted {
-  background-color: #ffe5b4;
-}
-
-
-.row {
-  cursor: pointer;
-}

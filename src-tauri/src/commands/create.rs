@@ -12,21 +12,22 @@ pub async fn create_relative(
     let pool = state.pool.clone();
     sqlx::query(
         r#"
-        INSERT INTO relative (
-            sameness, lost_reason,  sex, birthday, fname, mname, lname, 
-            phone, email, pinned, hotness, 
-            crazy, swarthy, employable
-        ) 
-        VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-            $11, $12, $13, $14
-        );
+    INSERT INTO relative (
+        sameness, lost_reason, sex, birthday, died_at, fname, mname, lname, 
+        phone, email, pinned, hotness, crazy, swarthy, employable, 
+        mother_id, father_id, state, address
+    ) 
+    VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15, $16, $17, $18, $19
+    );
     "#,
     )
     .bind(new_relative.sameness)
     .bind(new_relative.lost_reason)
     .bind(new_relative.sex)
     .bind(new_relative.birthday)
+    .bind(new_relative.died_at)
     .bind(new_relative.first_name)
     .bind(new_relative.middle_name)
     .bind(new_relative.last_name)
@@ -37,6 +38,10 @@ pub async fn create_relative(
     .bind(new_relative.crazy)
     .bind(new_relative.swarthy)
     .bind(new_relative.employable)
+    .bind(new_relative.mother_id)
+    .bind(new_relative.father_id)
+    .bind(new_relative.state)
+    .bind(new_relative.address)
     .execute(pool.deref())
     .await
     .map_err(|e| {

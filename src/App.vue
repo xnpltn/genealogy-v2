@@ -3,11 +3,11 @@ import Aside from "./components/aside/index.vue"
 import Females from "./components/tables/Females.vue";
 import Relatives from "./components/tables/Relatives.vue";
 import Employees from "./components/tables/Employees.vue";
-import EditForm from "./components/EditForm.vue";
 import AddNewForm from "./components/AddNewForm.vue";
 import NoteSection from "./components/NoteSection.vue";
-import { useStateStore } from "./store/state";
+import EditView from "./components/EditView.vue";
 
+import { useStateStore } from "./store/state";
 const stateStore = useStateStore()
 
 </script>
@@ -30,7 +30,7 @@ const stateStore = useStateStore()
         <AddNewForm />
       </div>
       <div v-if="stateStore.activeTab == 4">
-        <EditForm />
+        <EditView />
       </div>
     </div>
   </main>

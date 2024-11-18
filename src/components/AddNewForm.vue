@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import type { CreateRelativeParams } from '../utils/types';
+import { useRelativesStore } from '../store/relatives';
+import { useStateStore } from '../store/state';
+
+const relativesStore = useRelativesStore()
+const stateStore = useStateStore()
 
 
-const newRelative = reactive<Partial<CreateRelativeParams>>({});
+onMounted(() => {
+  relativesStore.fetchMaleParents(stateStore.activeRelativeId)
+  relativesStore.fetchFemaleParants(stateStore.activeRelativeId)
+})
+
+const newRelative = reactive({}) as CreateRelativeParams;
 newRelative.sameness = 0
 newRelative.hotness = 0
 newRelative.crazy = 0
@@ -51,11 +61,22 @@ function save() {
       <input type="number" id="sameness" v-model="newRelative.sameness" name="sameness" step="1" min="0" max="10"
         value="0.0">
 
-      <label for="mother">Mother:</label>
-      <input type="text" id="mother" v-model="newRelative.mother" name="mother">
-
-      <label for="father">Father:</label>
-      <input type="text" id="father" v-model="newRelative.father" name="father">
+      <div>
+        <label for="mother">Mother:</label>
+        <select name="mother" id="mother" v-model="newRelative.motherId">
+          <option v-for="mother in relativesStore.femaleParents" :value="mother.id" :key=mother.id>
+            {{ mother.firstName + ' ' + mother.lastName }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="father">Father:</label>
+        <select name="father" id="father" v-model="newRelative.fatherId">
+          <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
+            {{ father.firstName + ' ' + father.lastName }}
+          </option>
+        </select>
+      </div>
 
       <label for="phone">Phone:</label>
       <input type="tel" id="phone" v-model="newRelative.phone" name="phone">

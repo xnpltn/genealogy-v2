@@ -24,9 +24,9 @@ pub struct RelativeIndividual {
     pub birthday: Option<String>,
     pub age: Option<u8>,
     pub sameness: Option<f32>,
-    #[sqlx(skip)]
+    pub mother_id: Option<u16>,
+    pub father_id: Option<u16>,
     pub mother: Option<String>,
-    #[sqlx(skip)]
     pub father: Option<String>,
     pub phone: Option<String>,
     pub email: Option<String>,
@@ -78,13 +78,15 @@ pub struct EmployeeIndividual {
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRelativeParams {
+    pub id: u16,
     pub first_name: String,
     pub middle_name: Option<String>,
     pub last_name: String,
     pub birthday: Option<String>,
+    pub died_at: Option<String>,
     pub sameness: Option<f32>,
-    pub mother: Option<String>,
-    pub father: Option<String>,
+    pub mother_id: Option<u32>,
+    pub father_id: Option<u32>,
     pub phone: Option<String>,
     pub email: Option<String>,
     pub sex: String,
@@ -94,6 +96,8 @@ pub struct CreateRelativeParams {
     pub hotness: Option<u8>,
     pub crazy: Option<u8>,
     pub employable: Option<u8>,
+    pub address: Option<String>,
+    pub state: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -106,4 +110,16 @@ pub struct FemaleRelatives {
 #[serde(rename_all = "camelCase")]
 pub struct MalesRelatives {
     pub names: Vec<String>,
+}
+
+#[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ParantRelative {
+    pub id: u8,
+    #[sqlx(rename = "fname")]
+    pub first_name: String,
+    #[sqlx(rename = "mname")]
+    pub middle_name: Option<String>,
+    #[sqlx(rename = "lname")]
+    pub last_name: String,
 }

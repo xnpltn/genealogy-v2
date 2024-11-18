@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export const useStateStore = defineStore('relatives', () => {
+export const useStateStore = defineStore('state', () => {
   const showNotes = ref(false)
   const activeTab = ref(0)
   const activeRelativeId = ref(0)
