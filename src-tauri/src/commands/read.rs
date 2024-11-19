@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use crate::types;
 use std::ops::Deref;
 use tauri::{AppHandle, Manager};

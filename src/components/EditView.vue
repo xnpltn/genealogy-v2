@@ -1,28 +1,25 @@
 <script setup lang="ts">
 
-import { onMounted, type Ref, ref, reactive } from 'vue';
+import { onMounted, type Ref, ref, reactive, watchEffect } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
-import { RelativeIndividual, CreateRelativeParams } from '../utils/types';
+import { type RelativeIndividual, type CreateRelativeParams } from '../utils/types';
 import { useStateStore } from '../store/state';
-const activeRelative = ref({}) as Ref<RelativeIndividual, RelativeIndividual>
 import { useRelativesStore } from '../store/relatives';
 
 const relativesStore = useRelativesStore()
 const stateStore = useStateStore()
-
-
+const activeRelative = ref({}) as Ref<RelativeIndividual, RelativeIndividual>
 const newRelative = reactive({}) as CreateRelativeParams;
-newRelative.sameness = 0
-newRelative.hotness = 0
-newRelative.crazy = 0
-newRelative.employable = 0
-newRelative.swarthy = 0
-newRelative.pinned = false
-newRelative.sex = "male"
+const removeMother = ref(false)
+const removeFather = ref(false)
 
 onMounted(() => {
   relativesStore.fetchMaleParents(stateStore.activeRelativeId)
   relativesStore.fetchFemaleParants(stateStore.activeRelativeId)
+})
+
+watchEffect(() => {
+  newRelative.sex = activeRelative.value.sex
 })
 
 onMounted(() => {
@@ -36,7 +33,27 @@ onMounted(() => {
 
 
 function saveRelative() {
+  if (newRelative.sex.toLowerCase() == 'female') {
+    newRelative.employable = 0
+  } else if (newRelative.sex.toLowerCase() == 'male') {
+    newRelative.hotness = 0
+    newRelative.crazy = 0
+    newRelative.swarthy = 0
+  }
+
+  if (removeFather.value) {
+    newRelative.fatherId = null
+  }
+  if (removeMother.value) {
+    newRelative.motherId = null
+  }
   invoke("update_relative", { relative: { ...activeRelative.value, ...newRelative } }).catch(e => {
+    console.log(e)
+  })
+}
+
+function deleteRelative() {
+  invoke("delete_relative", { relativeId: stateStore.activeRelativeId }).then(() => { }).catch(e => {
     console.log(e)
   })
 }
@@ -46,87 +63,133 @@ function saveRelative() {
 <template>
   <div class="preview">
     <div>
-      <!-- left  part -->
+      <button @click="deleteRelative">Delete</button>
       <form @submit.prevent="saveRelative" id="createRelativeForm">
-        <!-- Required Fields -->
-        <label for="firstName">First Name:</label>
-        <input type="text" v-model="activeRelative.firstName" id="firstName" name="firstName" required>
-
-        <label for="lastName">Last Name:</label>
-        <input type="text" v-model="activeRelative.lastName" id="lastName" name="lastName" required>
-
-        <label for="pinned">Pinned:</label>
-        <input type="checkbox" v-model="activeRelative.pinned" id="pinned" name="pinned">
-
-        <!-- Optional Fields -->
-        <label for="middleName">Middle Name:</label>
-        <input type="text" v-model="activeRelative.middleName" id="middleName" name="middleName">
-
-        <label for="sex">Sex:</label>
-        <select name="sex" id="sex" v-model="activeRelative.sex">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-
-        <label for="birthday">Birthday:</label>
-
-        <input type="date" v-model="activeRelative.birthday" id="birthday" name="birthday">
-
-        <label for="sameness">Sameness:</label>
-        <input type="number" id="sameness" v-model="activeRelative.sameness" name="sameness" step="1" min="0" max="10"
-          value="0.0">
-
         <div>
-          <label for="mother">Mother:</label>
-          <select name="mother" id="mother" v-model="newRelative.motherId">
-            <option v-for="mother in relativesStore.femaleParents" :value="mother.id" :key=mother.id>
-              {{ mother.firstName + ' ' + mother.lastName }}
-            </option>
-          </select>
+          <label for="firstName">First Name:</label>
+          <input type="text" v-model="activeRelative.firstName" id="firstName" name="firstName" required>
         </div>
+
         <div>
-          <label for="father">Father:</label>
-          <select name="father" id="father" v-model="newRelative.fatherId">
-            <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
-              {{ father.firstName + ' ' + father.lastName }}
-            </option>
+          <label for="lastName">Last Name:</label>
+          <input type="text" v-model="activeRelative.lastName" id="lastName" name="lastName" required>
+        </div>
+
+        <div>
+
+          <label for="pinned">Pinned:</label>
+          <input type="checkbox" v-model="activeRelative.pinned" id="pinned" name="pinned">
+        </div>
+
+        <div>
+          <label for="middleName">Middle Name:</label>
+          <input type="text" v-model="activeRelative.middleName" id="middleName" name="middleName">
+        </div>
+
+        <div>
+          <label for="sex">Sex:</label>
+          <select name="sex" id="sex" v-model="activeRelative.sex">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
         </div>
 
-        <label for="phone">Phone:</label>
-        <input type="tel" id="phone" v-model="activeRelative.phone" name="phone">
+        <div>
+          <label for="birthday">Birthday:</label>
+          <input type="date" v-model="activeRelative.birthday" id="birthday" name="birthday">
+        </div>
+        <div>
+          <label for="birthday">Died AT:</label>
+          <input type="date" v-model="activeRelative.diedAt" id="birthday" name="birthday">
+        </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="activeRelative.email" name="email">
+        <div>
+          <label for="state">State:</label>
+          <input type="text" id="state" v-model="activeRelative.state" name="email">
+        </div>
+        <div>
+          <label for="address">Addres:</label>
+          <input type="text" id="address" v-model="activeRelative.address" name="email">
+        </div>
+        <div>
+          <label for="sameness">Sameness:</label>
+          <input type="number" id="sameness" v-model="activeRelative.sameness" name="sameness" step="1" min="0"
+            max="10">
+        </div>
 
-        <label for="lostReason">Lost Reason:</label>
-        <textarea id="lostReason" name="lostReason" v-model="activeRelative.lostReason"></textarea>
+        <div>
+          <div v-if="activeRelative.father">
+            <label for="removeMother"></label>
+            <input type="checkbox" v-model="removeMother" id="removeMother" name="removeMother">
+          </div>
+          <div>
+            <label for="mother">Mother: Current '{{ activeRelative.mother }}'</label>
+            <select name="mother" id="mother" v-model="newRelative.motherId">
+              <option v-for="mother in relativesStore.femaleParents" :value="mother.id" :key=mother.id>
+                {{ mother.firstName + ' ' + mother.lastName }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div v-if="activeRelative.father">
+            <label for="removeFather"></label>
+            <input type="checkbox" v-model="removeFather" id="removeFather" name="removeFather">
+          </div>
+          <div>
+            <label for="father">Father: Current '{{ activeRelative.father }}'</label>
+            <select name="father" id="father" v-model="newRelative.fatherId">
+              <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
+                {{ father.firstName + ' ' + father.lastName }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" v-model="activeRelative.phone" name="phone">
+        </div>
+
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="activeRelative.email" name="email">
+        </div>
+
+        <div>
+          <label for="lostReason">Lost Reason:</label>
+          <textarea id="lostReason" name="lostReason" v-model="activeRelative.lostReason"></textarea>
+        </div>
 
         <div v-if="activeRelative.sex == 'female'">
+          <div>
+            <label for="swarthy">Swarthy:</label>
+            <input type="number" id="swarthy" name="swarthy" v-model="activeRelative.swarthy" step="1" min="0" max="10">
+          </div>
 
-          <label for="swarthy">Swarthy:</label>
-          <input type="number" id="swarthy" name="swarthy" v-model="activeRelative.swarthy" step="1" min="0" max="10"
-            value="0">
+          <div>
 
-          <label for="hotness">Hotness:</label>
-          <input type="number" id="hotness" name="hotness" v-model="activeRelative.hotness" step="1" min="0" max="10"
-            value="0">
+            <label for="hotness">Hotness:</label>
+            <input type="number" id="hotness" name="hotness" v-model="activeRelative.hotness" step="1" min="0" max="10">
+          </div>
 
-          <label for="crazy">Crazy:</label>
-          <input type="number" id="crazy" name="crazy" v-model="activeRelative.crazy" step="1" min="0" max="10"
-            value="0">
+          <div>
+            <label for="crazy">Crazy:</label>
+            <input type="number" id="crazy" name="crazy" v-model="activeRelative.crazy" step="1" min="0" max="10">
+          </div>
         </div>
 
         <div v-if="activeRelative.sex == 'male'">
-          <label for="employable">Employable:</label>
-          <input type="number" id="employable" v-model="activeRelative.employable" name="employable" step="1" min="0"
-            max="10" value="0">
+          <div>
+            <label for="employable">Employable:</label>
+            <input type="number" id="employable" v-model="activeRelative.employable" name="employable" step="1" min="0"
+              max="10" value="0">
+          </div>
         </div>
         <button type="submit">Submit</button>
       </form>
     </div>
     <div>
-      <!-- right part -->
       Hello World
     </div>
   </div>

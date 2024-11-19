@@ -10,6 +10,7 @@ import { type CreateFileParams } from "../utils/file";
 export const useFilesStore = defineStore('files', () => {
   const files: Ref<File[], File[]> = ref([])
   const activeFileId = ref(0)
+  const activeFile = ref({}) as Ref<File, File>
   function getFiles(id: number) {
     invoke("files_by_relative_id", { activeRelativeId: id }).then((val) => {
       files.value = val as Array<File>
@@ -37,7 +38,6 @@ export const useFilesStore = defineStore('files', () => {
   }
 
   function deleteFile(relative_id: number) {
-    console.log("del file ", activeFileId.value)
     invoke('delete_file', { fileId: activeFileId.value }).then(() => {
       getFiles(relative_id)
       activeFileId.value = 0
@@ -46,5 +46,31 @@ export const useFilesStore = defineStore('files', () => {
     })
   }
 
-  return { files, getFiles, createFile, activeFileId, deleteFile }
+  function pinFile(relative_id: number) {
+    if (activeFile.value.pinned) {
+      invoke('unpin_file', { fileId: activeFileId.value }).then(() => {
+        getFiles(relative_id)
+        activeFileId.value = 0
+      }).catch(e => {
+        console.log(e)
+      })
+    } else {
+      invoke('pin_file', { fileId: activeFileId.value }).then(() => {
+        getFiles(relative_id)
+        activeFileId.value = 0
+      }).catch(e => {
+        console.log(e)
+      })
+    }
+  }
+
+  return {
+    files,
+    activeFile,
+    getFiles,
+    createFile,
+    activeFileId,
+    deleteFile,
+    pinFile
+  }
 })

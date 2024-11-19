@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { invoke, } from '@tauri-apps/api/core';
 import { onMounted, type Ref, ref } from 'vue';
-import { RelativeIndividual } from '../../utils/types';
+import { type RelativeIndividual } from '../../utils/types';
 import { useStateStore } from '../../store/state';
 
 const stateStore = useStateStore()
@@ -9,7 +9,6 @@ const relatives: Ref<Array<RelativeIndividual>> = ref([])
 
 onMounted(() => {
   invoke("all_females").then(val => {
-    console.log(val)
     const females = val as Array<RelativeIndividual>
     relatives.value = females
 

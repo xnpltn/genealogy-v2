@@ -8,6 +8,7 @@ pub mod note;
 pub struct State {
     pub pool: Arc<SqlitePool>,
     pub files_dir: String,
+    #[allow(unused)]
     pub images_dir: String,
 }
 
@@ -78,7 +79,6 @@ pub struct EmployeeIndividual {
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRelativeParams {
-    pub id: u16,
     pub first_name: String,
     pub middle_name: Option<String>,
     pub last_name: String,
@@ -100,6 +100,30 @@ pub struct CreateRelativeParams {
     pub state: Option<String>,
 }
 
+#[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateRelativeParams {
+    pub id: u16,
+    pub first_name: String,
+    pub middle_name: Option<String>,
+    pub last_name: String,
+    pub birthday: Option<String>,
+    pub died_at: Option<String>,
+    pub sameness: Option<f32>,
+    pub mother_id: Option<u32>,
+    pub father_id: Option<u32>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub sex: String,
+    pub pinned: bool,
+    pub lost_reason: Option<String>,
+    pub swarthy: Option<u8>,
+    pub hotness: Option<u8>,
+    pub crazy: Option<u8>,
+    pub employable: Option<u8>,
+    pub address: Option<String>,
+    pub state: Option<String>,
+}
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FemaleRelatives {

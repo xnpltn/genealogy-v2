@@ -6,7 +6,7 @@ use crate::types;
 #[tauri::command]
 pub async fn update_relative(
     app: AppHandle,
-    relative: types::CreateRelativeParams,
+    relative: types::UpdateRelativeParams,
 ) -> Result<(), String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
@@ -98,6 +98,54 @@ pub async fn update_note(
             edited_note.id,
             e.to_string()
         );
+        e.to_string()
+    })?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn pin_file(app: AppHandle, file_id: u32) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        UPDATE 
+            file 
+        SET 
+            pinned = 1 
+        WHERE 
+            id = $1;
+    "#,
+    )
+    .bind(file_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error pinnign file:  err: {}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn unpin_file(app: AppHandle, file_id: u32) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        UPDATE 
+            file 
+        SET 
+            pinned = 0 
+        WHERE 
+            id = $1;
+    "#,
+    )
+    .bind(file_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error pining file: err: {}", e.to_string());
         e.to_string()
     })?;
     Ok(())

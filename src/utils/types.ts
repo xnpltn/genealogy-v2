@@ -1,8 +1,9 @@
 export type RelativeIndividual = {
   sex: string,
-  birthday: string,
+  birthday: string | null,
+  diedAt: string | null,
   firstName: string;
-  middleName?: string;
+  middleName: string | null;
   lastName: string;
   id: number;
   name: string;
@@ -18,6 +19,8 @@ export type RelativeIndividual = {
   email: string | null;
   pinned: boolean;
   lostReason: string | null;
+  address: string | null;
+  state: string | null
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -82,7 +85,7 @@ export type CreateRelativeParams = {
   lastName: string;
   sex: string;
   birthday: string | null;
-  diedAd: string | null
+  diedAt: string | null
   sameness: number | null;
   motherId: number | null;
   fatherId: number | null;

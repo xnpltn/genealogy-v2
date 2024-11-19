@@ -53,8 +53,11 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 commands::create::create_note,
                 commands::delete::delete_note,
                 commands::update::update_note,
+                commands::delete::delete_relative,
                 commands::create::create_file,
                 commands::delete::delete_file,
+                commands::update::pin_file,
+                commands::update::unpin_file,
             ])
             .setup(move |app| {
                 app.manage(types::State {

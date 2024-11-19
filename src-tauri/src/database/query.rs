@@ -89,7 +89,7 @@ END;
 CREATE TABLE IF NOT EXISTS file (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updates_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
     file_name           TEXT NOT NULL,
     file_path           TEXT NOT NULL,
     relative_id         INTEGER  NOT NULL,

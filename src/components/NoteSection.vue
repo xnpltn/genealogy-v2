@@ -114,7 +114,8 @@ function close() {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="file in filesStore.files" @click="filesStore.activeFileId = file.id" class="note__row"
+              <tr v-for="file in filesStore.files"
+                @click="filesStore.activeFile = file; filesStore.activeFileId = file.id" class="note__row"
                 :class="{ 'selected': filesStore.activeFileId == file.id }">
                 <td>{{ file.fileName }}</td>
                 <td>{{ file.type }}</td>
@@ -127,6 +128,7 @@ function close() {
       <div class="preview">
         <button @click="openFile">AddFile</button>
         <div v-if="filesStore.activeFileId > 0">
+          <button @click="filesStore.pinFile(stateStore.activeRelativeId)">pin</button>
           <button @click="filesStore.deleteFile(stateStore.activeRelativeId)">delete</button>
         </div>
       </div>
@@ -137,7 +139,7 @@ function close() {
 
 <style scoped>
 .notes-sect {
-  height: 300px;
+  height: 320px;
   width: 100%;
   background: #f4f4f4;
   position: absolute;
@@ -152,7 +154,7 @@ function close() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
+  padding: 0.225rem;
   background: #e9ecef;
   border-bottom: 1px solid #dee2e6;
 }

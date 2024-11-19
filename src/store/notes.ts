@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { Note, UpdateNoteParams } from "../utils/notes";
+import { type Note, type UpdateNoteParams } from "../utils/notes";
 import { ref } from "vue";
 import { type Ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import { CreateNoteParams } from "../utils/notes";
+import { type CreateNoteParams } from "../utils/notes";
 
 export const useNotesStore = defineStore('notes', () => {
   const notes: Ref<Note[], Note[]> = ref([])
@@ -18,7 +18,6 @@ export const useNotesStore = defineStore('notes', () => {
 
   function getNotes(id: number) {
     invoke("notes_by_relative_id", { activeRelativeId: id }).then((val) => {
-      console.log(val)
       notes.value = val as Array<Note>;
     }).catch(e => {
       if (e instanceof Error) {
@@ -55,6 +54,24 @@ export const useNotesStore = defineStore('notes', () => {
       console.log(e)
     })
   }
+
+  function pinNote(relative_id: number) {
+    if (activeNote.value.pinned) {
+      invoke('unpin_note', { noteId: activeNoteId.value }).then(() => {
+        getNotes(relative_id)
+        activeNoteId.value = 0
+      }).catch(e => {
+        console.log(e)
+      })
+    } else {
+      invoke('pin_note', { noteId: activeNoteId.value }).then(() => {
+        getNotes(relative_id)
+        activeNoteId.value = 0
+      }).catch(e => {
+        console.log(e)
+      })
+    }
+  }
   return {
     notes,
     section,
@@ -65,6 +82,7 @@ export const useNotesStore = defineStore('notes', () => {
     activeNote,
     saveEditedNote,
     deleteNote,
-    activeNoteId
+    activeNoteId,
+    pinNote
   }
 })

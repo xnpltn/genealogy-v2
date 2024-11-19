@@ -14,14 +14,7 @@ onMounted(() => {
   relativesStore.fetchFemaleParants(stateStore.activeRelativeId)
 })
 
-const newRelative = reactive({}) as CreateRelativeParams;
-newRelative.sameness = 0
-newRelative.hotness = 0
-newRelative.crazy = 0
-newRelative.employable = 0
-newRelative.swarthy = 0
-newRelative.pinned = false
-newRelative.sex = "male"
+const newRelative = reactive({ sameness: 0, hotness: 0, crazy: 0, employable: 0, swarthy: 0, pinned: false, sex: 'male' }) as CreateRelativeParams;
 function save() {
   let re = newRelative as CreateRelativeParams
   invoke("create_relative", { newRelative: re }).then(() => {
@@ -34,32 +27,48 @@ function save() {
   <div>
     <form @submit.prevent="save" id="createRelativeForm">
       <!-- Required Fields -->
-      <label for="firstName">First Name:</label>
-      <input type="text" v-model="newRelative.firstName" id="firstName" name="firstName" required>
+      <div>
+        <label for="firstName">First Name:</label>
+        <input type="text" v-model="newRelative.firstName" id="firstName" name="firstName" required>
+      </div>
 
-      <label for="lastName">Last Name:</label>
-      <input type="text" v-model="newRelative.lastName" id="lastName" name="lastName" required>
+      <div>
+        <label for="lastName">Last Name:</label>
+        <input type="text" v-model="newRelative.lastName" id="lastName" name="lastName" required>
+      </div>
 
-      <label for="pinned">Pinned:</label>
-      <input type="checkbox" v-model="newRelative.pinned" id="pinned" name="pinned">
+      <div>
+        <label for="pinned">Pinned:</label>
+        <input type="checkbox" v-model="newRelative.pinned" id="pinned" name="pinned">
+      </div>
 
       <!-- Optional Fields -->
-      <label for="middleName">Middle Name:</label>
-      <input type="text" v-model="newRelative.middleName" id="middleName" name="middleName">
+      <div>
+        <label for="middleName">Middle Name:</label>
+        <input type="text" v-model="newRelative.middleName" id="middleName" name="middleName">
+      </div>
 
-      <label for="sex">Sex:</label>
-      <select name="sex" id="sex" v-model="newRelative.sex">
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-      </select>
+      <div>
+        <label for="sex">Sex:</label>
+        <select name="sex" id="sex" v-model="newRelative.sex">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
 
-      <label for="birthday">Birthday:</label>
-
-      <input type="date" v-model="newRelative.birthday" id="birthday" name="birthday">
-
-      <label for="sameness">Sameness:</label>
-      <input type="number" id="sameness" v-model="newRelative.sameness" name="sameness" step="1" min="0" max="10"
-        value="0.0">
+      <div>
+        <label for="birthday">Birthday:</label>
+        <input type="date" v-model="newRelative.birthday" id="birthday" name="birthday">
+      </div>
+      <div>
+        <label for="birthday">Died At:</label>
+        <input type="date" v-model="newRelative.diedAt" id="birthday" name="birthday">
+      </div>
+      <div>
+        <label for="sameness">Sameness:</label>
+        <input type="number" id="sameness" v-model="newRelative.sameness" name="sameness" step="1" min="0" max="10"
+          value="0.0">
+      </div>
 
       <div>
         <label for="mother">Mother:</label>
@@ -78,30 +87,47 @@ function save() {
         </select>
       </div>
 
-      <label for="phone">Phone:</label>
-      <input type="tel" id="phone" v-model="newRelative.phone" name="phone">
+      <div>
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" v-model="newRelative.phone" name="phone">
+      </div>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" v-model="newRelative.email" name="email">
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" v-model="newRelative.email" name="email">
+      </div>
+      <div>
+        <label for="state">State:</label>
+        <input type="text" id="state" v-model="newRelative.state" name="email">
+      </div>
+      <div>
+        <label for="address">Addres:</label>
+        <input type="text" id="address" v-model="newRelative.address" name="email">
+      </div>
 
-      <label for="lostReason">Lost Reason:</label>
-      <textarea id="lostReason" name="lostReason" v-model="newRelative.lostReason"></textarea>
-
-      <div v-if="newRelative.sex == 'female'">
-        <label for="swarthy">Swarthy:</label>
-        <input type="number" id="swarthy" name="swarthy" v-model="newRelative.swarthy" step="1" min="0" max="10"
-          value="0">
+      <div>
+        <label for="lostReason">Lost Reason:</label>
+        <textarea id="lostReason" name="lostReason" v-model="newRelative.lostReason"></textarea>
       </div>
 
       <div v-if="newRelative.sex == 'female'">
-        <label for="hotness">Hotness:</label>
-        <input type="number" id="hotness" name="hotness" v-model="newRelative.hotness" step="1" min="0" max="10"
-          value="0">
-      </div>
 
-      <div v-if="newRelative.sex == 'female'">
-        <label for="crazy">Crazy:</label>
-        <input type="number" id="crazy" name="crazy" v-model="newRelative.crazy" step="1" min="0" max="10" value="0">
+        <div>
+          <label for="swarthy">Swarthy:</label>
+          <input type="number" id="swarthy" name="swarthy" v-model="newRelative.swarthy" step="1" min="0" max="10"
+            value="0">
+        </div>
+
+        <div>
+          <label for="hotness">Hotness:</label>
+          <input type="number" id="hotness" name="hotness" v-model="newRelative.hotness" step="1" min="0" max="10"
+            value="0">
+        </div>
+
+        <div>
+          <label for="crazy">Crazy:</label>
+          <input type="number" id="crazy" name="crazy" v-model="newRelative.crazy" step="1" min="0" max="10" value="0">
+        </div>
       </div>
 
       <div v-if="newRelative.sex == 'male'">

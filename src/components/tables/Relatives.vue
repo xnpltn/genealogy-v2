@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core';
-import { RelativeIndividual } from '../../utils/types';
+import { type RelativeIndividual } from '../../utils/types';
 import { onMounted, type Ref, ref } from 'vue';
 import { useStateStore } from '../../store/state';
 import { useNotesStore } from '../../store/notes';
 import { useFilesStore } from '../../store/files';
 
+const notesStore = useNotesStore()
+const filesStore = useFilesStore()
 const stateStore = useStateStore()
 const relatives: Ref<Array<RelativeIndividual>> = ref([])
-
 const fetching = ref(true)
+
+
 onMounted(() => {
   invoke("all_relatives").then((val) => {
     relatives.value = val as Array<RelativeIndividual>;
-    console.log(val)
     fetching.value = false
   }).catch((e) => {
     if (e instanceof Error) {
@@ -24,8 +26,6 @@ onMounted(() => {
   })
 })
 
-const notesStore = useNotesStore()
-const filesStore = useFilesStore()
 function resetState() {
   notesStore.activeNoteId = 0
   filesStore.activeFileId = 0
