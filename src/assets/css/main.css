@@ -53,3 +53,7 @@ svg {
 .container {
   padding: var(--size-sm);
 }
+
+.delete_button {
+  background-color: red !important;
+}

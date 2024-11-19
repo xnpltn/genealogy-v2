@@ -45,25 +45,34 @@ function close() {
 
 
 <template>
-  <Modal :model_open="showAddNoteModal" @close-modal="showAddNoteModal = false">
-    <form @submit.prevent="createNote">
-      <div>
-        <label for="note">Note</label>
-        <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
+
+  <div class="modal" v-if="showAddNoteModal">
+    <div class="modal__container">
+      <div class="modal__tabbar">
+        <button @click="showAddNoteModal = false">close</button>
       </div>
-      <div>
-        <label for="pinned">Pinned</label>
-        <input type="checkbox" v-model="createNotesParams.pinned">
+      <div class="modal__form-container">
+        <form @submit.prevent="createNote">
+          <div>
+            <label for="note">Note</label>
+            <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
+          </div>
+          <div>
+            <label for="pinned">Pinned</label>
+            <input type="checkbox" v-model="createNotesParams.pinned">
+          </div>
+          <button>submit</button>
+        </form>
       </div>
-      <button>submit</button>
-    </form>
-  </Modal>
+    </div>
+  </div>
   <div class="notes-sect">
     <div class="tabbar">
-
       <div>
-        <button @click="notesStore.changeSection(0); filesStore.activeFileId = 0">Notes</button>
-        <button @click="notesStore.changeSection(1); notesStore.activeNoteId = 0">files</button>
+        <button :class="{ 'selected__section': notesStore.section == 0 }"
+          @click="notesStore.changeSection(0); filesStore.activeFileId = 0; notesStore.notesEditAreaChanged = false">Notes</button>
+        <button :class="{ 'selected__section': notesStore.section == 1 }"
+          @click="notesStore.changeSection(1); notesStore.activeNoteId = 0; notesStore.notesEditAreaChanged = false">files</button>
       </div>
       <button @click="close">Close</button>
     </div>
@@ -93,12 +102,15 @@ function close() {
       <div class="preview">
         <button @click="showAddNoteModal = true">add note</button>
         <div v-if="notesStore.activeNoteId > 0">
-          <textarea name="edit-note" id="edit-note" v-model="notesStore.activeNote.text"></textarea>
-          <button @click="notesStore.activeNote.pinned = !notesStore.activeNote.pinned">{{ notesStore.activeNote.pinned
-            ? "Unpin" : "Pin"
-            }}</button>
-          <button @click="saveEditedNote">Save</button>
-          <button @click="deleteEdtitedNote(notesStore.activeNote.id)">delete</button>
+          <textarea name="edit-note" id="edit-note" v-model="notesStore.activeNote.text"
+            @input="notesStore.notesEditAreaChanged = true"></textarea>
+        </div>
+        <div v-if="notesStore.activeNoteId > 0" class="button_container">
+          <button @click="notesStore.pinNote(stateStore.activeRelativeId)">
+            {{ notesStore.activeNote.pinned ? "unpin" : "pin" }}
+          </button>
+          <button v-if="notesStore.notesEditAreaChanged" @click="saveEditedNote">Save</button>
+          <button class="delete_button" @click="deleteEdtitedNote(notesStore.activeNote.id)">delete</button>
         </div>
       </div>
     </div>
@@ -127,9 +139,11 @@ function close() {
       </div>
       <div class="preview">
         <button @click="openFile">AddFile</button>
-        <div v-if="filesStore.activeFileId > 0">
-          <button @click="filesStore.pinFile(stateStore.activeRelativeId)">pin</button>
-          <button @click="filesStore.deleteFile(stateStore.activeRelativeId)">delete</button>
+        <div v-if="filesStore.activeFileId > 0" class="button_container">
+          <button @click="filesStore.pinFile(stateStore.activeRelativeId)">
+            {{ filesStore.activeFile.pinned ? 'unpin' : 'pin' }}
+          </button>
+          <button class="delete_button" @click="filesStore.deleteFile(stateStore.activeRelativeId)">delete</button>
         </div>
       </div>
     </div>
@@ -160,7 +174,7 @@ function close() {
 }
 
 .tabbar button {
-  background: #007bff;
+  background: #495057;
   color: white;
   border: none;
   padding: 5px 10px;
@@ -171,7 +185,7 @@ function close() {
 }
 
 .tabbar button:hover {
-  background: #0056b3;
+  background: #495057;
 }
 
 .notes__container {
@@ -245,5 +259,49 @@ textarea {
 .selected {
   background: #218838;
 
+}
+
+.button_container {
+  display: flex;
+  align-items: center;
+  gap: var(--size-sm);
+}
+
+.selected__section {
+  background-color: #007bff !important;
+}
+
+.modal {
+  z-index: 100;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.1);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+
+}
+
+.modal__container {
+  height: 250px;
+  width: 700px;
+  background: white;
+  border: none;
+  border-radius: var(--size-sm);
+  padding: var(--size-sm);
+}
+
+.modal__tabbar {
+  background-color: red;
+  display: flex;
+  justify-content: end;
+}
+
+.modal__form-container {
+  width: 100%;
 }
 </style>

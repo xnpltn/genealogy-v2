@@ -104,6 +104,54 @@ pub async fn update_note(
 }
 
 #[tauri::command]
+pub async fn pin_note(app: AppHandle, note_id: u32) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        UPDATE 
+            note 
+        SET 
+            pinned = 1 
+        WHERE 
+            id = $1;
+    "#,
+    )
+    .bind(note_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error pinnign note:  err: {}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn unpin_note(app: AppHandle, note_id: u32) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        UPDATE 
+            note 
+        SET 
+            pinned = 0 
+        WHERE 
+            id = $1;
+    "#,
+    )
+    .bind(note_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error pining note: err: {}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn pin_file(app: AppHandle, file_id: u32) -> Result<(), String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();

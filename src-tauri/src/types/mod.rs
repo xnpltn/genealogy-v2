@@ -38,6 +38,8 @@ pub struct RelativeIndividual {
     pub hotness: Option<u8>,
     pub crazy: Option<u8>,
     pub employable: Option<u8>,
+    pub created_at: String,
+    pub updated_at: String,
 }
 
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]

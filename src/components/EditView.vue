@@ -61,9 +61,11 @@ function deleteRelative() {
 </script>
 
 <template>
-  <div class="preview">
+  <div class="container">
     <div>
-      <button @click="deleteRelative">Delete</button>
+      <div>
+        <button @click="deleteRelative">Delete</button>
+      </div>
       <form @submit.prevent="saveRelative" id="createRelativeForm">
         <div>
           <label for="firstName">First Name:</label>
@@ -76,7 +78,6 @@ function deleteRelative() {
         </div>
 
         <div>
-
           <label for="pinned">Pinned:</label>
           <input type="checkbox" v-model="activeRelative.pinned" id="pinned" name="pinned">
         </div>
@@ -168,7 +169,6 @@ function deleteRelative() {
           </div>
 
           <div>
-
             <label for="hotness">Hotness:</label>
             <input type="number" id="hotness" name="hotness" v-model="activeRelative.hotness" step="1" min="0" max="10">
           </div>
@@ -197,7 +197,7 @@ function deleteRelative() {
 
 
 <style scoped>
-.preview {
+.container {
   display: grid;
   grid-template-columns: 2fr 1fr;
   height: calc(100vh - 20%);
@@ -264,7 +264,7 @@ button[type="submit"]:hover {
 }
 
 /* Right side text container */
-.preview>div:last-child {
+.container>div:last-child {
   background-color: white;
   display: flex;
   align-items: center;

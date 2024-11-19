@@ -11,6 +11,7 @@ export const useNotesStore = defineStore('notes', () => {
   const showAddNoteModal = ref(false)
   const activeNote = ref({}) as Ref<Note, Note>
   const activeNoteId = ref(0)
+  const notesEditAreaChanged = ref(false)
 
   function changeSection(id: number) {
     section.value = id
@@ -75,6 +76,7 @@ export const useNotesStore = defineStore('notes', () => {
   return {
     notes,
     section,
+    notesEditAreaChanged,
     showAddNoteModal,
     changeSection,
     getNotes,
