@@ -11,14 +11,14 @@ edition = "2021"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "genealogy_v2_lib"
+name = "genealogy_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -27,4 +27,6 @@ tokio = { version = "1.41.1", features = ["full"] }
 chrono = "0.4.38"
 directories = "5.0"
 tauri-plugin-dialog = "2"
+regex = "1.11.1"
+percent-encoding = "2.3.1"
 

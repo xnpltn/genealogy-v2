@@ -12,8 +12,8 @@ function closeModal() {
   <div class="modal" v-if="model_open">
     <div class="modal__container">
       <div>
-        <button @click="closeModal">Close</button>
         <slot />
+        <button @click="closeModal">Close</button>
       </div>
     </div>
   </div>
@@ -21,6 +21,7 @@ function closeModal() {
 
 <style scoped>
 .modal {
+  z-index: 100;
   position: absolute;
   background: rgba(0, 0, 0, 0.1);
   height: 100vh;
@@ -35,11 +36,21 @@ function closeModal() {
 }
 
 .modal__container {
-  height: 50%;
-  width: 500px;
+  height: 250px;
+  width: 700px;
   background: white;
   border: none;
   border-radius: var(--size-sm);
   padding: var(--size-sm);
+}
+
+.modal__tabbar {
+  background-color: red;
+  display: flex;
+  justify-content: end;
+}
+
+.modal__form-container {
+  width: 100%;
 }
 </style>

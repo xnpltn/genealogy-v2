@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { type Ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { type CreateNoteParams } from "../utils/notes";
+import { confirm } from "@tauri-apps/plugin-dialog";
 
 export const useNotesStore = defineStore('notes', () => {
   const notes: Ref<Note[], Note[]> = ref([])
@@ -48,9 +49,15 @@ export const useNotesStore = defineStore('notes', () => {
   }
 
   function deleteNote(note_id: number, relative_id: number) {
-    invoke("delete_note", { noteId: note_id }).then(() => {
-      activeNoteId.value = 0
-      getNotes(relative_id)
+    confirm('This action cannot be reverted. Are you sure?', { kind: 'warning' }).then(y => {
+      if (y) {
+        invoke("delete_note", { noteId: note_id }).then(() => {
+          activeNoteId.value = 0
+          getNotes(relative_id)
+        }).catch(e => {
+          console.log(e)
+        })
+      }
     }).catch(e => {
       console.log(e)
     })

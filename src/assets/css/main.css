@@ -4,12 +4,17 @@
 
 :root {
   /* colours */
-  --clr-dark: #111827;
-  --clr-dark2: #292e39;
-  --clr-light: #ffffff;
-  --clr-light2: #b2c4dd;
-  --clr-gray: #d8dee9;
-  --clr-gray2: #e5e9f0;
+  --clr-dark: #2e3440;
+  --clr-dark1: #3b4252;
+  --clr-dark2: #434c5e;
+  --clr-light: #eceff4;
+  --clr-light1: #e5e9f0;
+  --clr-light2: #d8dee9;
+  --clr-frost: #5e81ac;
+  --clr-frost2: #81a1c1;
+  --clr-frost3: #88c0d0;
+  --clr-aurora: #bf616a;
+  --clr-aurora1: #d08770;
 
 
   /* sizes */

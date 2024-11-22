@@ -19,9 +19,16 @@ pub struct CreateFileParams {
     pub file_path: String,
 }
 
+
+pub struct Image {
+    pub filename: String,
+}
+
 */
 
-
+export type Image = {
+  filename: string
+}
 
 export type File = {
   id: number

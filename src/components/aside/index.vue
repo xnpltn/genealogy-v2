@@ -12,19 +12,28 @@ function resetState(tabIndex: number) {
   stateStore.setShowNotesToFalse()
   stateStore.changeActiveTab(tabIndex)
 }
+
+function changeTheme() {
+  stateStore.darkTheme = !stateStore.darkTheme
+}
 </script>
 
 <template>
-  <div class="header">
-    <div class="header__tabs">
-      <button :class="{ 'active': stateStore.activeTab == 0 }" class="btn" @click="; resetState(0);">Relatives</button>
+  <div class="header" :class="{ 'header-light': !stateStore.darkTheme, 'header-dark': stateStore.darkTheme }">
+    <div class="header__tabs"
+      :class="{ 'header__tabs-light': !stateStore.darkTheme, 'header__tabs-dark': stateStore.darkTheme }">
+      <button :class="{ 'active': stateStore.activeTab == 0, }" class="btn" @click="; resetState(0);">Relatives</button>
       <button :class="{ 'active': stateStore.activeTab == 1 }" class="btn" @click="; resetState(1)">Females</button>
       <button :class="{ 'active': stateStore.activeTab == 2 }" class="btn" @click="; resetState(2)">Employees</button>
     </div>
-    <div class="btn__containers">
-      <button class="editButton" @click="; resetState(4)" v-if="stateStore.hasActiveRelative">Edit</button>
-      <button class="editButton" @click=" resetState(3)">new
+    <div class="btn__containers"
+      :class="{ 'btn__containers-light': !stateStore.darkTheme, 'btn__containers-dark': stateStore.darkTheme }">
+      <button :class="{ 'header__btn-light': !stateStore.darkTheme, 'header__btn-dark': stateStore.darkTheme }"
+        class="editButton" @click="; resetState(4)" v-if="stateStore.hasActiveRelative">Edit</button>
+      <button :class="{ 'header__btn-light': !stateStore.darkTheme, 'header__btn-dark': stateStore.darkTheme }"
+        class="editButton" @click=" resetState(3)">new
         relative</button>
+      <button @click="changeTheme">{{ stateStore.darkTheme ? 'light' : 'dark' }}</button>
     </div>
   </div>
 </template>
@@ -32,7 +41,6 @@ function resetState(tabIndex: number) {
 
 <style scoped>
 .header {
-  background-color: #f8f9fa;
   display: flex;
   justify-content: space-between;
   align-items: center;

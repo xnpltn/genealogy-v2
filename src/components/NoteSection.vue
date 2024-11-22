@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { reactive, ref, watchEffect } from 'vue';
 import Modal from './Modal.vue';
+import { reactive, ref, watchEffect } from 'vue';
 import { CreateNoteParams } from '../utils/notes';
 import { useStateStore } from '../store/state';
 import { useNotesStore } from '../store/notes';
@@ -9,7 +9,6 @@ import { useFilesStore } from '../store/files';
 const stateStore = useStateStore()
 const notesStore = useNotesStore()
 const filesStore = useFilesStore()
-
 
 watchEffect(() => {
   notesStore.getNotes(stateStore.activeRelativeId)
@@ -22,7 +21,6 @@ const createNotesParams = reactive<Partial<CreateNoteParams>>({})
 function createNote() {
   notesStore.createNote(createNotesParams, stateStore.activeRelativeId)
 }
-
 
 function saveEditedNote() {
   notesStore.saveEditedNote(stateStore.activeRelativeId)
@@ -40,32 +38,27 @@ function close() {
   filesStore.activeFileId = 0
   stateStore.setShowNotesToFalse()
 }
-
 </script>
 
 
 <template>
-
-  <div class="modal" v-if="showAddNoteModal">
-    <div class="modal__container">
-      <div class="modal__tabbar">
-        <button @click="showAddNoteModal = false">close</button>
-      </div>
-      <div class="modal__form-container">
-        <form @submit.prevent="createNote">
-          <div>
-            <label for="note">Note</label>
-            <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
-          </div>
-          <div>
-            <label for="pinned">Pinned</label>
-            <input type="checkbox" v-model="createNotesParams.pinned">
-          </div>
-          <button>submit</button>
-        </form>
-      </div>
+  <Modal @close-modal="showAddNoteModal = false" :model_open="showAddNoteModal">
+    <div class="modal__tabbar">
     </div>
-  </div>
+    <div class="modal__form-container">
+      <form @submit.prevent="createNote">
+        <div>
+          <label for="note">Note</label>
+          <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
+        </div>
+        <div>
+          <label for="pinned">Pinned</label>
+          <input type="checkbox" v-model="createNotesParams.pinned">
+        </div>
+        <button>submit</button>
+      </form>
+    </div>
+  </Modal>
   <div class="notes-sect">
     <div class="tabbar">
       <div>
@@ -139,11 +132,17 @@ function close() {
       </div>
       <div class="preview">
         <button @click="openFile">AddFile</button>
-        <div v-if="filesStore.activeFileId > 0" class="button_container">
-          <button @click="filesStore.pinFile(stateStore.activeRelativeId)">
-            {{ filesStore.activeFile.pinned ? 'unpin' : 'pin' }}
-          </button>
-          <button class="delete_button" @click="filesStore.deleteFile(stateStore.activeRelativeId)">delete</button>
+        <div v-if="filesStore.activeFileId > 0" class="file-info-container">
+          <div class="metainfo">
+            <h1 class="file-name">FileName: {{ filesStore.activeFile.fileName }}</h1>
+            <h3 class="file-type">FileType: {{ filesStore.activeFile.type }}</h3>
+          </div>
+          <div class="button-container">
+            <button class="pin-button" @click="filesStore.pinFile(stateStore.activeRelativeId)">
+              {{ filesStore.activeFile.pinned ? 'Unpin' : 'Pin' }}
+            </button>
+            <button class="delete-button" @click="filesStore.deleteFile(stateStore.activeRelativeId)">Delete</button>
+          </div>
         </div>
       </div>
     </div>
@@ -303,5 +302,58 @@ textarea {
 
 .modal__form-container {
   width: 100%;
+}
+
+.metainfo {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--size-sm);
+
+}
+
+.metainfo h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.metainfo h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.metainfo h3 {
+  margin: 0;
+  font-size: 12px;
+}
+
+.file-info-container {
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metainfo {
+  margin-bottom: 1rem;
+}
+
+.file-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.file-type {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
 }
 </style>

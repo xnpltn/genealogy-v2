@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { type Ref, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { type File } from "../utils/file";
-import { open } from '@tauri-apps/plugin-dialog';
+import { open, confirm } from '@tauri-apps/plugin-dialog';
 import { type CreateFileParams } from "../utils/file";
 
 
@@ -38,9 +38,16 @@ export const useFilesStore = defineStore('files', () => {
   }
 
   function deleteFile(relative_id: number) {
-    invoke('delete_file', { fileId: activeFileId.value }).then(() => {
-      getFiles(relative_id)
-      activeFileId.value = 0
+    confirm('This action cannot be reverted. Are you sure?', { kind: 'warning' }).then(y => {
+      if (y) {
+        invoke('delete_file', { fileId: activeFileId.value }).then(() => {
+          getFiles(relative_id)
+          activeFileId.value = 0
+        }).catch(e => {
+          console.log(e)
+        })
+
+      }
     }).catch(e => {
       console.log(e)
     })

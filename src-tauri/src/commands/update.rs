@@ -2,6 +2,7 @@ use std::ops::Deref;
 use tauri::{AppHandle, Manager};
 
 use crate::types;
+use crate::utils;
 
 #[tauri::command]
 pub async fn update_relative(
@@ -10,6 +11,18 @@ pub async fn update_relative(
 ) -> Result<(), String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
+    if !utils::is_valid_email(&relative.email.clone().unwrap_or("".to_string())) {
+        return Err("Invalid Email Address".to_string());
+    }
+
+    if !utils::is_valid_phone(&relative.phone.clone().unwrap_or("".to_string())) {
+        return Err("Invalid Phone Number".to_string());
+    }
+
+    if !utils::is_valid_state(&relative.state.clone().unwrap_or("".to_string())) {
+        return Err("Invalid State".to_string());
+    }
+
     sqlx::query(
         r#"
         UPDATE 
@@ -63,7 +76,7 @@ pub async fn update_relative(
     .await
     .map_err(|e| {
         println!("error updating: {}", e.to_string());
-        e.to_string()
+        "Error Updating Relative".to_string()
     })?;
     println!("updated");
     Ok(())

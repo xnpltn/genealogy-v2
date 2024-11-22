@@ -1,10 +1,14 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
+
 export const useStateStore = defineStore('state', () => {
   const showNotes = ref(false)
   const activeTab = ref(0)
+  const showError = ref(false)
+  const errorValue = ref('')
   const activeRelativeId = ref(0)
+  const darkTheme = ref(false);
   const hasActiveRelative = computed(() => activeRelativeId.value > 0)
   function setShowNotesToFalse() {
     showNotes.value = false
@@ -22,6 +26,9 @@ export const useStateStore = defineStore('state', () => {
     activeRelativeId.value = id
   }
   return {
+    darkTheme,
+    showError,
+    errorValue,
     showNotes,
     activeTab,
     activeRelativeId,

@@ -52,7 +52,7 @@ pub async fn all_females(
         LEFT JOIN 
             relative f ON r.father_id = f.id
         WHERE
-            LOWER(r.sex) = LOWER('female')
+            LOWER(r.sex) = LOWER('female') AND r.hotness > 0
         ORDER BY
             r.pinned DESC
         "#,
@@ -228,4 +228,31 @@ pub async fn male_parents(
         e.to_string()
     })?;
     Ok(females)
+}
+
+#[tauri::command]
+pub async fn images_by_relative_id(
+    app: AppHandle,
+    relative_id: u32,
+) -> Result<Vec<types::Image>, String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    let images: Vec<types::Image> = sqlx::query_as(
+        r#"
+            SELECT 
+                filename
+            FROM 
+                image
+            WHERE
+                relative_id = $1 
+        "#,
+    )
+    .bind(relative_id)
+    .fetch_all(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("{}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(images)
 }

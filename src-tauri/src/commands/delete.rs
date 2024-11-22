@@ -20,7 +20,7 @@ pub async fn delete_relative(app: AppHandle, relative_id: u32) -> Result<(), Str
     .await
     .map_err(|e| {
         println!("error deleting: {}", e.to_string());
-        e.to_string()
+        "Errors Deleting Relative".to_string()
     })?;
     Ok(())
 }
@@ -43,7 +43,7 @@ pub async fn delete_note(app: AppHandle, note_id: u32) -> Result<(), String> {
     .await
     .map_err(|e| {
         println!("error deleting: {}", e.to_string());
-        e.to_string()
+        "Error Deleting Note".to_string()
     })?;
     Ok(())
 }
@@ -65,7 +65,7 @@ pub async fn delete_file(app: AppHandle, file_id: u32) -> Result<(), String> {
     .await
     .map_err(|e| {
         println!("error deleting: {}", e.to_string());
-        e.to_string()
+        "Error Deleting File".to_string()
     })?;
     Ok(())
 }

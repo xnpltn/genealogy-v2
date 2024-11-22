@@ -2,6 +2,7 @@ use std::{fs, ops::Deref, path::Path};
 use tauri::{AppHandle, Manager};
 
 use crate::types;
+use crate::utils;
 
 #[tauri::command]
 pub async fn create_relative(
@@ -10,6 +11,19 @@ pub async fn create_relative(
 ) -> Result<(), String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
+
+    if !utils::is_valid_email(&new_relative.email.clone().unwrap_or("".to_string())) {
+        return Err("Invalid Email Adress".to_string());
+    }
+
+    if !utils::is_valid_phone(&new_relative.phone.clone().unwrap_or("".to_string())) {
+        return Err("Invalid Phone Number".to_string());
+    }
+
+    if !utils::is_valid_state(&new_relative.state.clone().unwrap_or("".to_string())) {
+        return Err("Invalid State".to_string());
+    }
+
     sqlx::query(
         r#"
     INSERT INTO relative (
@@ -46,7 +60,7 @@ pub async fn create_relative(
     .await
     .map_err(|e| {
         println!("error adding: {}", e.to_string());
-        e.to_string()
+        "Error Creating Relative".to_string()
     })?;
     Ok(())
 }
@@ -117,6 +131,52 @@ pub async fn create_file(
             .bind(params.relative_id)
             .bind(file.extension().unwrap().to_str().unwrap().to_string())
             .bind(file_size)
+            .execute(pool.deref())
+            .await
+            .map_err(|e| {
+                println!("error adding file: {}", e.to_string());
+                e.to_string()
+            })?;
+        }
+        Err(e) => {
+            println!("error : {}", e.to_string());
+            return Err(e.to_string());
+        }
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn create_image(app: AppHandle, params: types::CreateImageParams) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    let file = Path::new(&params.image_path);
+
+    match fs::copy(
+        Path::new(&params.image_path),
+        Path::new(&std::format!(
+            "{}/{}-{}",
+            state.images_dir,
+            params.relative_id,
+            file.file_name().unwrap().to_str().unwrap().to_string()
+        )),
+    ) {
+        Ok(_) => {
+            sqlx::query(
+                r#"
+                    INSERT INTO 
+                        image (filename, relative_id)
+                    VALUES
+                        ($1, $2)
+                "#,
+            )
+            .bind(std::format!(
+                "{}/{}-{}",
+                state.images_dir,
+                params.relative_id,
+                file.file_name().unwrap().to_str().unwrap().to_string()
+            ))
+            .bind(params.relative_id)
             .execute(pool.deref())
             .await
             .map_err(|e| {

@@ -8,7 +8,6 @@ pub mod note;
 pub struct State {
     pub pool: Arc<SqlitePool>,
     pub files_dir: String,
-    #[allow(unused)]
     pub images_dir: String,
 }
 
@@ -148,4 +147,17 @@ pub struct ParantRelative {
     pub middle_name: Option<String>,
     #[sqlx(rename = "lname")]
     pub last_name: String,
+}
+
+#[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateImageParams {
+    pub relative_id: u16,
+    pub image_path: String,
+}
+
+#[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Image {
+    pub filename: String,
 }

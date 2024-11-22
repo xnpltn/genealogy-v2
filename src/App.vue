@@ -6,7 +6,6 @@ import Employees from "./components/tables/Employees.vue";
 import AddNewForm from "./components/AddNewForm.vue";
 import NoteSection from "./components/NoteSection.vue";
 import EditView from "./components/EditView.vue";
-
 import { useStateStore } from "./store/state";
 const stateStore = useStateStore()
 
