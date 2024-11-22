@@ -19,47 +19,100 @@ function changeTheme() {
 </script>
 
 <template>
-  <div class="header" :class="{ 'header-light': !stateStore.darkTheme, 'header-dark': stateStore.darkTheme }">
-    <div class="header__tabs"
-      :class="{ 'header__tabs-light': !stateStore.darkTheme, 'header__tabs-dark': stateStore.darkTheme }">
-      <button :class="{ 'active': stateStore.activeTab == 0, }" class="btn" @click="; resetState(0);">Relatives</button>
-      <button :class="{ 'active': stateStore.activeTab == 1 }" class="btn" @click="; resetState(1)">Females</button>
-      <button :class="{ 'active': stateStore.activeTab == 2 }" class="btn" @click="; resetState(2)">Employees</button>
+  <div class="navigation-header"
+    :class="{ 'navigation-header--light': !stateStore.darkTheme, 'navigation-header--dark': stateStore.darkTheme }">
+    <div class="navigation-tabs"
+      :class="{ 'navigation-tabs--light': !stateStore.darkTheme, 'navigation-tabs--dark': stateStore.darkTheme }">
+      <button :class="{
+        'navigation-tab': true,
+        'navigation-tab--light': !stateStore.darkTheme,
+        'navigation-tab--dark': stateStore.darkTheme,
+        'navigation-tab--active': stateStore.activeTab == 0
+      }" @click="resetState(0)">
+        Relatives
+      </button>
+      <button :class="{
+        'navigation-tab': true,
+        'navigation-tab--light': !stateStore.darkTheme,
+        'navigation-tab--dark': stateStore.darkTheme,
+        'navigation-tab--active': stateStore.activeTab == 1
+      }" @click="resetState(1)">
+        Females
+      </button>
+      <button :class="{
+        'navigation-tab': true,
+        'navigation-tab--light': !stateStore.darkTheme,
+        'navigation-tab--dark': stateStore.darkTheme,
+        'navigation-tab--active': stateStore.activeTab == 2
+      }" @click="resetState(2)">
+        Employees
+      </button>
     </div>
-    <div class="btn__containers"
-      :class="{ 'btn__containers-light': !stateStore.darkTheme, 'btn__containers-dark': stateStore.darkTheme }">
-      <button :class="{ 'header__btn-light': !stateStore.darkTheme, 'header__btn-dark': stateStore.darkTheme }"
-        class="editButton" @click="; resetState(4)" v-if="stateStore.hasActiveRelative">Edit</button>
-      <button :class="{ 'header__btn-light': !stateStore.darkTheme, 'header__btn-dark': stateStore.darkTheme }"
-        class="editButton" @click=" resetState(3)">new
-        relative</button>
-      <button @click="changeTheme">{{ stateStore.darkTheme ? 'light' : 'dark' }}</button>
+    <div class="action-buttons"
+      :class="{ 'action-buttons--light': !stateStore.darkTheme, 'action-buttons--dark': stateStore.darkTheme }">
+      <button v-if="stateStore.hasActiveRelative" :class="{
+        'action-button': true,
+        'action-button--edit': true,
+        'action-button--light': !stateStore.darkTheme,
+        'action-button--dark': stateStore.darkTheme
+      }" @click="resetState(4)">
+        Edit
+      </button>
+      <button :class="{
+        'action-button': true,
+        'action-button--new': true,
+        'action-button--light': !stateStore.darkTheme,
+        'action-button--dark': stateStore.darkTheme
+      }" @click="resetState(3)">
+        New Relative
+      </button>
+      <button :class="{
+        'theme-toggle': true,
+        'theme-toggle--light': !stateStore.darkTheme,
+        'theme-toggle--dark': stateStore.darkTheme
+      }" @click="changeTheme">
+        {{ stateStore.darkTheme ? 'Light' : 'Dark' }}
+      </button>
     </div>
   </div>
 </template>
 
 
 <style scoped>
-.header {
+.navigation-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--clr-frost3);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.header__tabs {
+.navigation-header--light {
+  background-color: var(--clr-light);
+}
+
+.navigation-header--dark {
+  background-color: var(--clr-dark);
+}
+
+.navigation-tabs {
   display: flex;
   gap: 10px;
 }
 
-.btn {
+.navigation-tabs--light {
+  background-color: var(--clr-light);
+}
+
+.navigation-tabs--dark {
+  background-color: var(--clr-dark);
+}
+
+.navigation-tab {
   height: 40px;
   border: none;
-  background-color: #495057;
   border-radius: 6px;
-  color: white;
   font-size: 14px;
   cursor: pointer;
   padding: 0 15px;
@@ -67,35 +120,88 @@ function changeTheme() {
   text-transform: capitalize;
 }
 
-.btn:hover {
-  background-color: #6c757d;
+.navigation-tab--light {
+  background-color: var(--clr-light2);
+  color: var(--clr-dark);
 }
 
-.btn.active {
-  background-color: #007bff;
-  color: white;
+.navigation-tab--dark {
+  background-color: var(--clr-dark2);
+  color: var(--clr-light);
+}
+
+.navigation-tab:hover {
+  background-color: var(--clr-frost2);
+  color: var(--clr-light);
+}
+
+.navigation-tab--active {
+  background-color: var(--clr-frost);
+  color: var(--clr-light);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.btn__containers {
+.action-buttons {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.editButton {
+.action-buttons--light {
+  background-color: var(--clr-light);
+}
+
+.action-buttons--dark {
+  background-color: var(--clr-dark);
+}
+
+.action-button {
   height: 40px;
   border: none;
-  background-color: #28a745;
   border-radius: 6px;
-  color: white;
   font-size: 14px;
   cursor: pointer;
   padding: 0 15px;
   transition: all 0.3s ease;
 }
 
-.editButton:hover {
-  background-color: #218838;
+.action-button--light {
+  background-color: var(--clr-frost3);
+  color: var(--clr-dark);
+}
+
+.action-button--dark {
+  background-color: var(--clr-frost);
+  color: var(--clr-light);
+}
+
+.action-button:hover {
+  background-color: var(--clr-frost2);
+  color: var(--clr-light);
+}
+
+.theme-toggle {
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 15px;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle--light {
+  background-color: var(--clr-dark2);
+  color: var(--clr-light);
+}
+
+.theme-toggle--dark {
+  background-color: var(--clr-light2);
+  color: var(--clr-dark);
+}
+
+.theme-toggle:hover {
+  background-color: var(--clr-frost2);
+  color: var(--clr-light);
 }
 </style>

@@ -22,37 +22,45 @@ function toggleNoteSection(id: number) {
 </script>
 
 <template>
-  <div class="table-container">
-    <table>
-      <thead>
+  <div class="relatives-table"
+    :class="{ 'relatives-table--light': !stateStore.darkTheme, 'relatives-table--dark': stateStore.darkTheme }">
+    <table class="data-grid">
+      <thead class="data-grid__header"
+        :class="{ 'data-grid__header--light': !stateStore.darkTheme, 'data-grid__header--dark': stateStore.darkTheme }">
         <tr>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Employable</th>
-          <th>Mother</th>
-          <th>Father</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Pinned</th>
-          <th>Lost Reason</th>
-          <th>Created</th>
-          <th>Updated</th>
+          <th class="data-grid__header-cell">Name</th>
+          <th class="data-grid__header-cell">Age</th>
+          <th class="data-grid__header-cell">Sameness</th>
+          <th class="data-grid__header-cell">Employable</th>
+          <th class="data-grid__header-cell">Mother</th>
+          <th class="data-grid__header-cell">Father</th>
+          <th class="data-grid__header-cell">Phone</th>
+          <th class="data-grid__header-cell">Email</th>
+          <th class="data-grid__header-cell">Pinned</th>
+          <th class="data-grid__header-cell">Lost Reason</th>
+          <th class="data-grid__header-cell">Created</th>
+          <th class="data-grid__header-cell">Updated</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="relative in relatives" :key="relative.id" @click="toggleNoteSection(relative.id)"
-          :class="{ 'selected': stateStore.activeRelativeId == relative.id }">
-          <td>{{ relative.firstName + ' ' + relative.lastName }}</td>
-          <td>{{ relative.age }}</td>
-          <td> {{ relative.sameness || 0 }}</td>
-          <td>{{ relative.mother }}</td>
-          <td>{{ relative.father }}</td>
-          <td>{{ relative.phone }}</td>
-          <td>{{ relative.email }}</td>
-          <td>{{ relative.pinned ? "pinned" : "not pinned" }}</td>
-          <td>{{ relative.lostReason || "" }}</td>
-          <td>{{ relative.createdAt }}</td>
-          <td>{{ relative.updatedAt }}</td>
+          class="data-grid__row" :class="{
+            'data-grid__row--light': !stateStore.darkTheme,
+            'data-grid__row--dark': stateStore.darkTheme,
+            'data-grid__row--selected': stateStore.activeRelativeId == relative.id
+          }">
+          <td class="data-grid__cell">{{ relative.firstName + ' ' + relative.lastName }}</td>
+          <td class="data-grid__cell">{{ relative.age }}</td>
+          <td class="data-grid__cell">{{ relative.sameness }}</td>
+          <td class="data-grid__cell">{{ relative.employable }}</td>
+          <td class="data-grid__cell">{{ relative.mother }}</td>
+          <td class="data-grid__cell">{{ relative.father }}</td>
+          <td class="data-grid__cell">{{ relative.phone }}</td>
+          <td class="data-grid__cell">{{ relative.email }}</td>
+          <td class="data-grid__cell data-grid__cell--pinned">{{ relative.pinned ? "pinned" : "not pinned" }}</td>
+          <td class="data-grid__cell">{{ relative.lostReason }}</td>
+          <td class="data-grid__cell">{{ relative.createdAt }}</td>
+          <td class="data-grid__cell">{{ relative.updatedAt }}</td>
         </tr>
       </tbody>
     </table>

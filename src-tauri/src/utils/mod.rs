@@ -38,7 +38,7 @@ pub fn is_valid_state(state: &str) -> bool {
     state.is_empty() || valid_states.contains(&state.to_uppercase().as_str())
 }
 
-pub fn is_valid_image(extension: &str) -> bool {
+/*pub fn is_valid_image(extension: &str) -> bool {
     let valid_extensions = ["png", "jpg", "jpeg", "gif", "webp", "svg"];
     valid_extensions.contains(&extension)
-}
+}*/

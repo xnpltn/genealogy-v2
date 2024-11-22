@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ model_open: boolean }>()
+defineProps<{ model_open: boolean, title?: string }>()
 const emits = defineEmits(['close-modal'])
 
 function closeModal() {
@@ -11,9 +11,14 @@ function closeModal() {
 <template>
   <div class="modal" v-if="model_open">
     <div class="modal__container">
-      <div>
-        <slot />
+      <div class="header">
+        <h1>{{ title }}</h1>
         <button @click="closeModal">Close</button>
+      </div>
+
+      <div>
+        // another card here
+        <slot />
       </div>
     </div>
   </div>

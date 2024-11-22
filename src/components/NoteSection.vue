@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Modal from './Modal.vue';
-import { reactive, ref, watchEffect } from 'vue';
+import { reactive, watchEffect } from 'vue';
 import { CreateNoteParams } from '../utils/notes';
 import { useStateStore } from '../store/state';
 import { useNotesStore } from '../store/notes';
@@ -15,7 +15,6 @@ watchEffect(() => {
   filesStore.getFiles(stateStore.activeRelativeId)
 })
 
-const showAddNoteModal = ref(false)
 const createNotesParams = reactive<Partial<CreateNoteParams>>({})
 
 function createNote() {
@@ -42,139 +41,205 @@ function close() {
 
 
 <template>
-  <Modal @close-modal="showAddNoteModal = false" :model_open="showAddNoteModal">
-    <div class="modal__tabbar">
+  <Modal @close-modal="notesStore.showAddNoteModal = false" :model_open="notesStore.showAddNoteModal">
+    <div class="note-form-header"
+      :class="{ 'note-form-header--light': !stateStore.darkTheme, 'note-form-header--dark': stateStore.darkTheme }">
     </div>
-    <div class="modal__form-container">
+    <div class="note-form-content"
+      :class="{ 'note-form-content--light': !stateStore.darkTheme, 'note-form-content--dark': stateStore.darkTheme }">
       <form @submit.prevent="createNote">
-        <div>
+        <div class="form-group">
           <label for="note">Note</label>
           <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
         </div>
-        <div>
+        <div class="form-group">
           <label for="pinned">Pinned</label>
           <input type="checkbox" v-model="createNotesParams.pinned">
         </div>
-        <button>submit</button>
+        <button class="form-submit">Save</button>
       </form>
     </div>
   </Modal>
-  <div class="notes-sect">
-    <div class="tabbar">
-      <div>
-        <button :class="{ 'selected__section': notesStore.section == 0 }"
-          @click="notesStore.changeSection(0); filesStore.activeFileId = 0; notesStore.notesEditAreaChanged = false">Notes</button>
-        <button :class="{ 'selected__section': notesStore.section == 1 }"
-          @click="notesStore.changeSection(1); notesStore.activeNoteId = 0; notesStore.notesEditAreaChanged = false">files</button>
-      </div>
-      <button @click="close">Close</button>
-    </div>
 
-    <div class="notes__container notes" v-if="notesStore.section == 0">
-      <div class="tables">
-        <div class="notes">
-          <table>
-            <thead>
-              <tr>
-                <th>note</th>
-                <th>pinned</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="note in notesStore.notes" class="note__row"
-                @click="notesStore.activeNote = note; notesStore.activeNoteId = note.id" :key="note.id"
-                :class="{ 'selected': notesStore.activeNoteId == note.id }">
-                <td>{{ note.text }}</td>
-                <td>{{ note.pinned }}</td>
-              </tr>
-            </tbody>
-          </table>
-
-        </div>
+  <div class="notes-panel"
+    :class="{ 'notes-panel--light': !stateStore.darkTheme, 'notes-panel--dark': stateStore.darkTheme }">
+    <nav class="notes-nav"
+      :class="{ 'notes-nav--light': !stateStore.darkTheme, 'notes-nav--dark': stateStore.darkTheme }">
+      <div class="nav-tabs">
+        <button :class="{
+          'nav-tab': true,
+          'nav-tab--light': !stateStore.darkTheme,
+          'nav-tab--dark': stateStore.darkTheme,
+          'nav-tab--active': notesStore.section == 0
+        }" @click="notesStore.changeSection(0); filesStore.activeFileId = 0; notesStore.notesEditAreaChanged = false">
+          Notes
+        </button>
+        <button :class="{
+          'nav-tab': true,
+          'nav-tab--light': !stateStore.darkTheme,
+          'nav-tab--dark': stateStore.darkTheme,
+          'nav-tab--active': notesStore.section == 1
+        }" @click="notesStore.changeSection(1); notesStore.activeNoteId = 0; notesStore.notesEditAreaChanged = false">
+          Files
+        </button>
       </div>
-      <div class="preview">
-        <button @click="showAddNoteModal = true">add note</button>
-        <div v-if="notesStore.activeNoteId > 0">
+      <button class="nav-close"
+        :class="{ 'nav-close--light': !stateStore.darkTheme, 'nav-close--dark': stateStore.darkTheme }" @click="close">
+        Close
+      </button>
+    </nav>
+
+    <!-- Notes Section -->
+    <div class="content-grid" v-if="notesStore.section == 0">
+      <div class="content-list"
+        :class="{ 'content-list--light': !stateStore.darkTheme, 'content-list--dark': stateStore.darkTheme }">
+        <table class="data-table">
+          <thead class="data-table__header">
+            <tr>
+              <th>Note</th>
+              <th>Pinned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="note in notesStore.notes" :key="note.id" class="data-table__row" :class="{
+              'data-table__row--light': !stateStore.darkTheme,
+              'data-table__row--dark': stateStore.darkTheme,
+              'data-table__row--selected': notesStore.activeNoteId == note.id
+            }" @click="notesStore.activeNote = note; notesStore.activeNoteId = note.id">
+              <td>{{ note.text }}</td>
+              <td>{{ note.pinned }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-preview"
+        :class="{ 'content-preview--light': !stateStore.darkTheme, 'content-preview--dark': stateStore.darkTheme }">
+        <button class="action-button"
+          :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
+          @click="notesStore.showAddNoteModal = true">
+          Add Note
+        </button>
+
+        <div v-if="notesStore.activeNoteId > 0" class="note-editor">
           <textarea name="edit-note" id="edit-note" v-model="notesStore.activeNote.text"
-            @input="notesStore.notesEditAreaChanged = true"></textarea>
+            @input="notesStore.notesEditAreaChanged = true"
+            :class="{ 'note-editor__textarea--light': !stateStore.darkTheme, 'note-editor__textarea--dark': stateStore.darkTheme }"></textarea>
         </div>
-        <div v-if="notesStore.activeNoteId > 0" class="button_container">
-          <button @click="notesStore.pinNote(stateStore.activeRelativeId)">
-            {{ notesStore.activeNote.pinned ? "unpin" : "pin" }}
+
+        <div v-if="notesStore.activeNoteId > 0" class="action-buttons">
+          <button class="action-button"
+            :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
+            @click="notesStore.pinNote(stateStore.activeRelativeId)">
+            {{ notesStore.activeNote.pinned ? "Unpin" : "Pin" }}
           </button>
-          <button v-if="notesStore.notesEditAreaChanged" @click="saveEditedNote">Save</button>
-          <button class="delete_button" @click="deleteEdtitedNote(notesStore.activeNote.id)">delete</button>
+          <button v-if="notesStore.notesEditAreaChanged" class="action-button"
+            :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
+            @click="saveEditedNote">
+            Save
+          </button>
+          <button class="action-button action-button--delete" @click="deleteEdtitedNote(notesStore.activeNote.id)">
+            Delete
+          </button>
         </div>
       </div>
     </div>
-    <div class="notes__container files" v-if="notesStore.section == 1">
-      <div class="tables">
-        <div class="files">
-          <table>
-            <thead>
-              <tr>
-                <th>file name</th>
-                <th>file type</th>
-                <th>Pinned</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="file in filesStore.files"
-                @click="filesStore.activeFile = file; filesStore.activeFileId = file.id" class="note__row"
-                :class="{ 'selected': filesStore.activeFileId == file.id }">
-                <td>{{ file.fileName }}</td>
-                <td>{{ file.type }}</td>
-                <td>{{ file.pinned }}</td>
-              </tr>
-            </tbody>
-          </table>
+
+    <div class="content-grid" v-if="notesStore.section == 1">
+      <div class="content-list"
+        :class="{ 'content-list--light': !stateStore.darkTheme, 'content-list--dark': stateStore.darkTheme }">
+        <table class="data-table">
+          <thead class="data-table__header">
+            <tr>
+              <th>file name</th>
+              <th>file type</th>
+              <th>Pinned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="file in filesStore.files" :key="file.id" class="data-table__row" :class="{
+              'data-table__row--light': !stateStore.darkTheme,
+              'data-table__row--dark': stateStore.darkTheme,
+              'data-table__row--selected': filesStore.activeFileId == file.id
+            }" @click="filesStore.activeFile = file; filesStore.activeFileId = file.id">
+              <td>{{ file.fileName }}</td>
+              <td>{{ file.type }}</td>
+              <td>{{ file.pinned }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="content-preview"
+        :class="{ 'content-preview--light': !stateStore.darkTheme, 'content-preview--dark': stateStore.darkTheme }">
+        <button class="action-button"
+          :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
+          @click="openFile">
+          Add Note
+        </button>
+
+        <div v-if="filesStore.activeFileId > 0">
+          <div>
+            <h1>FileName: {{ filesStore.activeFile.fileName }}</h1>
+            <h3>FileType: {{ filesStore.activeFile.type }}</h3>
+          </div>
+        </div>
+
+        <div v-if="filesStore.activeFileId > 0" class="action-buttons">
+          <button class="action-button"
+            :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
+            @click="filesStore.pinFile(stateStore.activeRelativeId)">
+            {{ filesStore.activeFile.pinned ? 'Unpin' : 'Pin' }}
+          </button>
+          <button class="action-button action-button--delete"
+            @click="filesStore.deleteFile(stateStore.activeRelativeId)">
+            Delete
+          </button>
         </div>
       </div>
-      <div class="preview">
-        <button @click="openFile">AddFile</button>
-        <div v-if="filesStore.activeFileId > 0" class="file-info-container">
-          <div class="metainfo">
-            <h1 class="file-name">FileName: {{ filesStore.activeFile.fileName }}</h1>
-            <h3 class="file-type">FileType: {{ filesStore.activeFile.type }}</h3>
-          </div>
-          <div class="button-container">
-            <button class="pin-button" @click="filesStore.pinFile(stateStore.activeRelativeId)">
-              {{ filesStore.activeFile.pinned ? 'Unpin' : 'Pin' }}
-            </button>
-            <button class="delete-button" @click="filesStore.deleteFile(stateStore.activeRelativeId)">Delete</button>
-          </div>
-        </div>
-      </div>
+      <!-- ... rest of the template -->
     </div>
   </div>
 </template>
 
 
 <style scoped>
-.notes-sect {
+.notes-panel {
   height: 320px;
   width: 100%;
-  background: #f4f4f4;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--clr-frost3);
   font-family: 'Arial', sans-serif;
 }
 
-.tabbar {
+.notes-panel--light {
+  background: var(--clr-light2);
+}
+
+.notes-panel--dark {
+  background: var(--clr-dark2);
+}
+
+.notes-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.225rem;
-  background: #e9ecef;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--clr-frost3);
 }
 
-.tabbar button {
-  background: #495057;
-  color: white;
+.notes-nav--light {
+  background: var(--clr-light1);
+}
+
+.notes-nav--dark {
+  background: var(--clr-dark1);
+}
+
+.nav-tab {
   border: none;
   padding: 5px 10px;
   margin: 0 5px;
@@ -183,177 +248,117 @@ function close() {
   transition: background-color 0.3s;
 }
 
-.tabbar button:hover {
-  background: #495057;
+.nav-tab--light {
+  background: var(--clr-light2);
+  color: var(--clr-dark);
 }
 
-.notes__container {
+.nav-tab--dark {
+  background: var(--clr-dark2);
+  color: var(--clr-light);
+}
+
+.nav-tab--active {
+  background: var(--clr-frost);
+  color: var(--clr-light);
+}
+
+.content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: calc(100% - 50px);
 }
 
-.tables {
-  background: white;
+.content-list {
   overflow-y: auto;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid var(--clr-frost3);
 }
 
-.preview {
-  background: #f8f9fa;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
+.content-list--light {
+  background: var(--clr-light);
 }
 
-table {
+.content-list--dark {
+  background: var(--clr-dark);
+}
+
+.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-thead {
+.data-table__header {
   position: sticky;
   top: 0;
-  background: #f1f3f5;
 }
 
-th,
-td {
-  border: 1px solid #dee2e6;
-  padding: 8px;
-  text-align: left;
+.data-table__header--light {
+  background: var(--clr-light1);
 }
 
-.note__row {
+.data-table__header--dark {
+  background: var(--clr-dark1);
+}
+
+.data-table__row {
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.note__row:hover {
-  background-color: #e9ecef;
+.data-table__row--light {
+  background: var(--clr-light);
+  color: var(--clr-dark);
 }
 
-textarea {
-  width: 100%;
-  min-height: 100px;
-  margin: 10px 0;
-  padding: 5px;
+.data-table__row--dark {
+  background: var(--clr-dark);
+  color: var(--clr-light);
 }
 
-.preview button {
+.data-table__row--selected {
+  background: var(--clr-frost);
+  color: var(--clr-light);
+}
+
+.action-button {
   margin: 5px 0;
   padding: 5px 10px;
-  background: #28a745;
-  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.preview button:hover {
-  background: #218838;
+.action-button--light {
+  background: var(--clr-frost3);
+  color: var(--clr-dark);
 }
 
-.selected {
-  background: #218838;
-
+.action-button--dark {
+  background: var(--clr-frost);
+  color: var(--clr-light);
 }
 
-.button_container {
-  display: flex;
-  align-items: center;
-  gap: var(--size-sm);
+.action-button--delete {
+  background: var(--clr-aurora);
+  color: var(--clr-light);
 }
 
-.selected__section {
-  background-color: #007bff !important;
-}
-
-.modal {
-  z-index: 100;
-  position: absolute;
-  background: rgba(0, 0, 0, 0.1);
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  top: 0;
-  left: 0;
-
-}
-
-.modal__container {
-  height: 250px;
-  width: 700px;
-  background: white;
-  border: none;
-  border-radius: var(--size-sm);
-  padding: var(--size-sm);
-}
-
-.modal__tabbar {
-  background-color: red;
-  display: flex;
-  justify-content: end;
-}
-
-.modal__form-container {
+.note-editor__textarea {
   width: 100%;
+  min-height: 100px;
+  margin: 10px 0;
+  padding: 5px;
+  border-radius: 4px;
 }
 
-.metainfo {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: var(--size-sm);
-
+.note-editor__textarea--light {
+  background: var(--clr-light);
+  color: var(--clr-dark);
 }
 
-.metainfo h1 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.metainfo h2 {
-  margin: 0;
-  font-size: 14px;
-}
-
-.metainfo h3 {
-  margin: 0;
-  font-size: 12px;
-}
-
-.file-info-container {
-  padding: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.metainfo {
-  margin-bottom: 1rem;
-}
-
-.file-name {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.file-type {
-  font-size: 1.2rem;
-  color: #666;
-}
-
-.button-container {
-  display: flex;
-  gap: 1rem;
+.note-editor__textarea--dark {
+  background: var(--clr-dark2);
+  color: var(--clr-light);
 }
 </style>

@@ -85,7 +85,7 @@ pub async fn all_employees(
         LEFT JOIN 
             relative f ON r.father_id = f.id
         WHERE
-            LOWER(r.sex) = LOWER('male') AND r.employable >= 0
+            LOWER(r.sex) = LOWER('male') AND r.employable > 0
         ORDER BY
             r.pinned DESC
         "#,
@@ -137,14 +137,25 @@ pub async fn notes_by_relative_id(
 ) -> Result<Vec<types::note::Note>, String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
-    let notes: Vec<types::note::Note> = sqlx::query_as("select * from note where relative_id= $1")
-        .bind(active_relative_id)
-        .fetch_all(pool.deref())
-        .await
-        .map_err(|e| {
-            println!("{}", e.to_string());
-            e.to_string()
-        })?;
+    let notes: Vec<types::note::Note> = sqlx::query_as(
+        r#"
+        SELECT 
+            * 
+        FROM 
+            note 
+        WHERE 
+            relative_id= $1
+        ORDER BY
+            pinned DESC
+        "#,
+    )
+    .bind(active_relative_id)
+    .fetch_all(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("{}", e.to_string());
+        e.to_string()
+    })?;
     Ok(notes)
 }
 
@@ -162,7 +173,9 @@ pub async fn files_by_relative_id(
             FROM 
                 file 
             WHERE 
-                relative_id = $1;
+                relative_id = $1
+            ORDER BY
+                pinned DESC
         "#,
     )
     .bind(active_relative_id)
@@ -190,7 +203,7 @@ pub async fn female_parents(
             FROM 
                 relative
             WHERE
-                id != $1 AND LOWER(sex) == 'female'
+                id != $1 AND LOWER(sex) == 'female' AND age > 13
         "#,
     )
     .bind(relative_id)
@@ -217,7 +230,7 @@ pub async fn male_parents(
             FROM 
                 relative
             WHERE
-                id != $1 AND LOWER(sex) == 'male'
+                id != $1 AND LOWER(sex) == 'male' AND age > 13
         "#,
     )
     .bind(relative_id)

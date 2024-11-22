@@ -33,6 +33,8 @@ export const useNotesStore = defineStore('notes', () => {
     invoke("create_note", { params: { pinned: params.pinned ? true : false, text: params.text, relative_id: relative_id } })
       .then(() => {
         activeNoteId.value = 0
+        showAddNoteModal.value = false
+        console.log("created note")
         getNotes(relative_id)
       }).catch(e => {
         console.log(e)

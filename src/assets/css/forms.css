@@ -1,0 +1,43 @@
+.main-container {
+  border: 1px solid red;
+}
+
+
+.form-container {
+  border: apx solid orange;
+  padding: var(--size-sm);
+
+}
+
+.form {
+  display: grid;
+  gap: var(--size-sm);
+}
+
+.form-group {
+  border: 1px solid red;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--size-sm);
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.075rem;
+}
+
+.meta-container {
+  display: grid;
+  border: 1px solid green;
+  padding: var(--size-sm);
+}
+
+.image-container {
+  border: 1px solid blue;
+  display: grid;
+}
+
+.image-section {
+  border: 1px solid magenta;
+}

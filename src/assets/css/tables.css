@@ -1,63 +1,109 @@
-.table-container {
+.relatives-table {
   width: 100%;
   overflow-x: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
-table {
+.relatives-table--light {
+  background: var(--clr-light);
+}
+
+.relatives-table--dark {
+  background: var(--clr-dark);
+}
+
+.data-grid {
   width: 100%;
   border-collapse: collapse;
   font-family: Arial, sans-serif;
   font-size: 13px;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-thead {
-  background-color: #f8f9fa;
+.data-grid__header {
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-th {
+.data-grid__header--light {
+  background: var(--clr-light1);
+}
+
+.data-grid__header--dark {
+  background: var(--clr-dark1);
+}
+
+.data-grid__header-cell {
   padding: 10px;
   text-align: left;
-  border-bottom: 2px solid #e0e0e0;
-  color: #555;
   font-weight: 600;
   text-transform: uppercase;
 }
 
-/*tbody tr {
-  transition: background-color 0.3s ease;
+.data-grid__header-cell--light {
+  color: var(--clr-dark);
+  border-bottom: 2px solid var(--clr-frost3);
+}
+
+.data-grid__header-cell--dark {
+  color: var(--clr-light);
+  border-bottom: 2px solid var(--clr-frost2);
+}
+
+.data-grid__row {
   cursor: pointer;
-}*/
+  transition: background-color 0.3s ease;
+}
 
+.data-grid__row--light {
+  color: var(--clr-dark);
+}
 
+.data-grid__row--dark {
+  color: var(--clr-light);
+}
 
-td {
+.data-grid__row--light:hover {
+  background-color: var(--clr-light2);
+}
+
+.data-grid__row--dark:hover {
+  background-color: var(--clr-dark2);
+}
+
+.data-grid__row--selected.data-grid__row--light {
+  background-color: var(--clr-frost3);
+}
+
+.data-grid__row--selected.data-grid__row--dark {
+  background-color: var(--clr-frost);
+}
+
+.data-grid__cell {
   padding: 8px 10px;
-  border-bottom: 1px solid #e0e0e0;
   max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-td:nth-child(8) {
+.data-grid__cell--light {
+  border-bottom: 1px solid var(--clr-light2);
+}
+
+.data-grid__cell--dark {
+  border-bottom: 1px solid var(--clr-dark2);
+}
+
+.data-grid__cell--pinned {
   font-weight: bold;
 }
 
-tr:hover {
-  cursor: pointer;
+.data-grid__cell--pinned.data-grid__cell--light {
+  color: var(--clr-frost);
 }
 
-.selected {
-  background-color: lightblue;
+.data-grid__cell--pinned.data-grid__cell--dark {
+  color: var(--clr-frost3);
 }
