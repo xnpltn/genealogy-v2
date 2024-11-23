@@ -28,10 +28,10 @@ pub async fn update_relative(
     }
 
     if !utils::is_valid_date(&relative.birthday.clone().unwrap_or_default()) {
-        return Err("Invalid Date".to_string());
+        return Err("Date must be in format MMDDYYYY".to_string());
     }
     if !utils::is_valid_date(&relative.died_at.clone().unwrap_or_default()) {
-        return Err("Invalid Date".to_string());
+        return Err("Date must be in format MMDDYYYY".to_string());
     }
 
     let sqlite_birthday = utils::sqlite_date(relative.birthday.clone().unwrap_or_default())
@@ -62,7 +62,9 @@ pub async fn update_relative(
             mother_id = $16,
             father_id = $17,
             state = $18,
-            address = $19
+            address = $19,
+            city = $20,
+            zipcode = $21
         WHERE 
             id = $20
         ;
@@ -88,6 +90,8 @@ pub async fn update_relative(
     .bind(relative.state)
     .bind(relative.address)
     .bind(relative.id)
+    .bind(relative.city)
+    .bind(relative.zipcode)
     .execute(pool.deref())
     .await
     .map_err(|e| {

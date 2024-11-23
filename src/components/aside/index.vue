@@ -3,6 +3,7 @@ import { useStateStore } from '../../store/state';
 import { useNotesStore } from '../../store/notes';
 import { useFilesStore } from '../../store/files';
 import { useImagesStore } from '../../store/images';
+import { openAboutModal } from '../../composables/about';
 
 const stateStore = useStateStore()
 const notesStore = useNotesStore()
@@ -69,6 +70,15 @@ function changeTheme() {
       }" @click="resetState(3)">
         New Relative
       </button>
+      <button :class="{
+        'action-button': true,
+        'action-button--new': true,
+        'action-button--light': !stateStore.darkTheme,
+        'action-button--dark': stateStore.darkTheme
+      }" @click="openAboutModal = true">
+        About
+      </button>
+
       <button :class="{
         'theme-toggle': true,
         'theme-toggle--light': !stateStore.darkTheme,

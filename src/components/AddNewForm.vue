@@ -32,12 +32,17 @@ function save() {
       imagesStore.createImage(chosenImage.value, relative.id)
     }
   }).catch(e => {
-    errorValue.value = `${e}`
+    if (`${e}`.toLowerCase().includes("invalid args")) {
+      errorValue.value = "Error Occured while creating relative. Check if All required fields are present. (first and last names)"
+    } else {
+      errorValue.value = `${e}`
+    }
     showError.value = true
     errorTitle.value = "Error Creating Relative"
     console.log(e)
   })
 }
+// Error Occured while creating relative. Check if All required fields are present. (first and last names)
 
 function uploadImage() {
   open({ multiple: false, directory: false, filters: [{ name: 'Image', extensions: ['jpg', 'png', 'jpeg', 'webp', 'ico'] }] }).then((file) => {
@@ -60,7 +65,7 @@ function uploadImage() {
             <FormSelect v-model="newRelative.sex" name="sex" label="Sex"
               :options="[{ value: 'male', name: 'Male' }, { value: 'female', name: 'Female' }]" />
             <FormInput title="Birthday" typ="text" name="birthday" v-model="newRelative.birthday" />
-            <FormInput title="Died At" typ="text" name="diedAt" v-model="newRelative.diedAt" />
+            <FormInput title="Died" typ="text" name="diedAt" v-model="newRelative.diedAt" />
           </div>
 
           <!-- contacts -->
@@ -69,6 +74,8 @@ function uploadImage() {
             <FormInput title="Phone" typ="text" name="phone" v-model="newRelative.phone" />
             <FormInput title="State" typ="text" name="state" v-model="newRelative.state" />
             <FormInput title="Address" typ="text" name="address" v-model="newRelative.address" />
+            <FormInput type="text" name="city" v-model="newRelative.city" title="City" />
+            <FormInput type="text" name="zipcode" v-model="newRelative.zipcode" title="zipcode" />
           </div>
 
           <!-- parents -->
@@ -80,16 +87,16 @@ function uploadImage() {
           </div>
 
           <div class="form-group" id="addition">
-            <FormInput title="Employable" typ="number" name="employable" v-model="newRelative.employable"
-              v-if="newRelative.sex === 'male'" />
-            <FormInput title="Swarthy" typ="number" name="swarthy" v-model="newRelative.swarthy"
-              v-if="newRelative.sex === 'female'" />
-            <FormInput title="Hotness" typ="number" name="hotness" v-model="newRelative.hotness"
-              v-if="newRelative.sex === 'female'" />
-            <FormInput title="Crazy" typ="number" name="crazy" v-model="newRelative.crazy"
+            <FormInput title="Employable" typ="number" name="employable" :max="10" :min="0" :step="1"
+              v-model="newRelative.employable" v-if="newRelative.sex === 'male'" />
+            <FormInput title="Swarthy" typ="number" name="swarthy" v-model="newRelative.swarthy" :max="10" :min="0"
+              :step="1" v-if="newRelative.sex === 'female'" />
+            <FormInput title="Hotness" typ="number" name="hotness" v-model="newRelative.hotness" :max="10" :min="0"
+              :step="1" v-if="newRelative.sex === 'female'" />
+            <FormInput title="Crazy" typ="number" name="crazy" v-model="newRelative.crazy" :max="10" :min="0" :step="1"
               v-if="newRelative.sex === 'female'" />
             <FormSelect v-model="newRelative.lostReason" name="lostReason" label="Lost Reason"
-              :options="[{ value: '1', name: 'Reason 1' }, { value: '2', name: 'Reason 2' }]" />
+              :options="relativesStore.lostReasons.map(reason => ({ value: reason, name: reason }))" />
           </div>
 
           <div class="form-group" id="pinned">

@@ -25,10 +25,10 @@ pub async fn create_relative(
     }
 
     if !utils::is_valid_date(&new_relative.birthday.clone().unwrap_or_default()) {
-        return Err("Invalid Date".to_string());
+        return Err("Date must be in format MMDDYYYY".to_string());
     }
     if !utils::is_valid_date(&new_relative.died_at.clone().unwrap_or_default()) {
-        return Err("Invalid Date".to_string());
+        return Err("Date must be in format MMDDYYYY".to_string());
     }
 
     let sqlite_birthday = utils::sqlite_date(new_relative.birthday.clone().unwrap_or_default())
@@ -40,11 +40,11 @@ pub async fn create_relative(
     INSERT INTO relative (
         sameness, lost_reason, sex, birthday, died_at, fname, mname, lname, 
         phone, email, pinned, hotness, crazy, swarthy, employable, 
-        mother_id, father_id, state, address
+        mother_id, father_id, state, address, city, zipcode
     ) 
     VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15, $16, $17, $18, $19
+        $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,$21
     ) RETURNING id;
     "#,
     )
@@ -67,6 +67,8 @@ pub async fn create_relative(
     .bind(new_relative.father_id)
     .bind(new_relative.state)
     .bind(new_relative.address)
+    .bind(new_relative.city)
+    .bind(new_relative.zipcode)
     .fetch_one(pool.deref())
     .await
     .map_err(|e| {

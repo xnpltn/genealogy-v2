@@ -243,3 +243,106 @@
   background-color: var(--clr-dark2);
 
 }
+
+
+.note-form-content {
+  width: 400px;
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.note-form-content--light {
+  background-color: var(--clr-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.note-form-content--dark {
+  background-color: var(--clr-dark1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.note-form-content--light label {
+  color: var(--clr-dark);
+}
+
+.note-form-content--dark label {
+  color: var(--clr-light);
+}
+
+textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.note-form-content--light textarea {
+  background-color: var(--clr-light);
+  border: 1px solid var(--clr-light2);
+  color: var(--clr-dark);
+}
+
+.note-form-content--dark textarea {
+  background-color: var(--clr-dark2);
+  border: 1px solid var(--clr-dark);
+  color: var(--clr-light);
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.note-form-content--light textarea:focus {
+  border-color: var(--clr-frost2);
+  box-shadow: 0 0 0 2px rgba(94, 129, 172, 0.2);
+}
+
+.note-form-content--dark textarea:focus {
+  border-color: var(--clr-frost3);
+  box-shadow: 0 0 0 2px rgba(136, 192, 208, 0.2);
+}
+
+.form-submit {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.note-form-content--light .form-submit {
+  background-color: var(--clr-frost);
+  color: var(--clr-light);
+}
+
+.note-form-content--dark .form-submit {
+  background-color: var(--clr-frost3);
+  color: var(--clr-dark);
+}
+
+.note-form-content--light .form-submit:hover {
+  background-color: var(--clr-frost2);
+}
+
+.note-form-content--dark .form-submit:hover {
+  background-color: var(--clr-frost2);
+  color: var(--clr-light);
+}

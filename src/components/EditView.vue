@@ -97,7 +97,6 @@ function uploadImage() {
   imageStore.loadImages(stateStore.activeRelativeId)
 }
 
-
 </script>
 
 <template>
@@ -113,7 +112,7 @@ function uploadImage() {
             <FormSelect :options="[{ value: 'male', name: 'Male' }, { value: 'female', name: 'Female' }]" label="Sex"
               name="sex" v-model="activeRelative.sex" />
             <FormInput type="text" name="birthday" v-model="activeRelative.birthday" title="Birthday" />
-            <FormInput type="text" name="diedAt" v-model="activeRelative.diedAt" title="Died At" />
+            <FormInput type="text" name="diedAt" v-model="activeRelative.diedAt" title="Died" />
           </div>
 
           <!-- contacts -->
@@ -122,14 +121,18 @@ function uploadImage() {
             <FormInput type="text" name="phone" v-model="activeRelative.phone" title="Phone" />
             <FormInput type="text" name="state" v-model="activeRelative.state" title="State" />
             <FormInput type="text" name="address" v-model="activeRelative.address" title="Address" />
+            <FormInput type="text" name="city" v-model="activeRelative.city" title="City" />
+            <FormInput type="text" name="zipcode" v-model="activeRelative.city" title="zipcode" />
           </div>
 
           <!-- parents -->
           <div class="form-group" id="remove-parents">
-            <FormInput v-if="activeRelative.father || newRelative.fatherId" type="checkbox" name="removeFather"
-              v-model="removeFather" title="Remove Father" />
-            <FormInput v-if="activeRelative.mother || newRelative.motherId" type="checkbox" name="removeMother"
-              v-model="removeMother" title="Remove Mother" />
+            <FormInput v-if="activeRelative.father || newRelative.fatherId" typ="checkbox" name="removeFather"
+              v-model="removeFather"
+              :title="activeRelative.father ? String('Remove Father (' + activeRelative.father + ')') : 'Remove Father'" />
+            <FormInput v-if="activeRelative.mother || newRelative.motherId" typ="checkbox" name="removeMother"
+              v-model="removeMother"
+              :title="activeRelative.father ? String('Remove Mother (' + activeRelative.mother + ')') : 'Remove Mother'" />
           </div>
           <div class="form-group" id="parents">
             <FormSelect
@@ -150,7 +153,7 @@ function uploadImage() {
               v-model="activeRelative.hotness" title="Hotness" />
             <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="crazy" v-model="activeRelative.crazy"
               title="Crazy" />
-            <FormSelect :options="[{ value: 'reason 1', name: 'Reason 1' }, { value: 'reason 2', name: 'Reason 2' }]"
+            <FormSelect :options="relativesStore.lostReasons.map(reason => ({ value: reason, name: reason }))"
               label="Lost Reason" name="lostReason" v-model="activeRelative.lostReason" />
           </div>
 
@@ -197,7 +200,8 @@ function uploadImage() {
             alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; width: auto; height: auto;">
         </div>
         <div style="display: flex; gap: var(--size-sm);">
-          <button @click="uploadImage">Upload Image</button>
+          <button class="action-button action-button--new action-button--light"
+            :class="{ 'action-button--dark': stateStore.darkTheme }" @click="uploadImage">Upload Image</button>
           <button v-if="imageStore.activeImageId > 0"
             @click="imageStore.deleteImage(imageStore.activeImageId, stateStore.activeRelativeId); chosenImage = '';"
             class="delete-button">Delete</button>

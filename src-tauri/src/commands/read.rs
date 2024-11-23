@@ -12,8 +12,8 @@ pub async fn all_relatives(
         r#"
         SELECT 
             r.*,
-            m.fname AS mother,
-            f.fname AS father
+            m.fname || ' ' || m.lname AS mother,
+            f.fname || ' ' || f.lname AS father
         FROM 
             relative r
         LEFT JOIN 
@@ -107,8 +107,8 @@ pub async fn relative_by_id(app: AppHandle, id: u32) -> Result<types::RelativeIn
         r#"
         SELECT 
             r.*,
-            m.fname AS mother,
-            f.fname AS father
+            m.fname || ' ' || m.lname AS mother,
+            f.fname || ' ' || f.lname AS father
         FROM 
             relative r
         LEFT JOIN 

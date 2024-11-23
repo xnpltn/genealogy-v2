@@ -10,8 +10,13 @@ type ParentRelative = {
   lastName: string
 }
 
+/*
+ 
+model: ["N/A", "Not Human", "Rejected by Them", "Rejected By Family", "Other"];
+ */
 export const useRelativesStore = defineStore('relatives', () => {
 
+  const lostReasons = ref(["N/A", "Not Human", "Rejected by Them", "Rejected By Family", "Other"]);
   const femaleParents = ref([]) as Ref<Array<ParentRelative>>
   const maleParents = ref([]) as Ref<Array<ParentRelative>>
   function fetchMaleParents(relative_id: number) {
@@ -31,6 +36,7 @@ export const useRelativesStore = defineStore('relatives', () => {
 
   return {
     femaleParents,
+    lostReasons,
     maleParents,
     fetchMaleParents,
     fetchFemaleParants

@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS relative (
     default_image_id INTEGER,
     address         TEXT,
     state           TEXT,
+    city            TEXT,
+    zipcode         TEXT,
     FOREIGN KEY (mother_id) REFERENCES relative(id),
     FOREIGN KEY (father_id) REFERENCES relative(id)
 );

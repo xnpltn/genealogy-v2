@@ -37,6 +37,10 @@ pub struct RelativeIndividual {
     pub hotness: Option<u8>,
     pub crazy: Option<u8>,
     pub employable: Option<u8>,
+    pub address: Option<String>,
+    pub state: Option<String>,
+    pub city: Option<String>,
+    pub zipcode: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -99,6 +103,8 @@ pub struct CreateRelativeParams {
     pub employable: Option<u8>,
     pub address: Option<String>,
     pub state: Option<String>,
+    pub city: Option<String>,
+    pub zipcode: Option<String>,
 }
 
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
@@ -124,6 +130,8 @@ pub struct UpdateRelativeParams {
     pub employable: Option<u8>,
     pub address: Option<String>,
     pub state: Option<String>,
+    pub city: Option<String>,
+    pub zipcode: Option<String>,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

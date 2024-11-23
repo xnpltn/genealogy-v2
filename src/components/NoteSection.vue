@@ -47,7 +47,7 @@ function close() {
     <div class="note-form-content"
       :class="{ 'note-form-content--light': !stateStore.darkTheme, 'note-form-content--dark': stateStore.darkTheme }">
       <form @submit.prevent="createNote">
-        <div class="form-group">
+        <div class="form-group" style="display: flex; flex-direction: column;">
           <label for="note">Note</label>
           <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
         </div>
