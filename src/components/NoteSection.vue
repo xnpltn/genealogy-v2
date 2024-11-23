@@ -15,10 +15,11 @@ watchEffect(() => {
   filesStore.getFiles(stateStore.activeRelativeId)
 })
 
-const createNotesParams = reactive<Partial<CreateNoteParams>>({})
+let createNotesParams = reactive<Partial<CreateNoteParams>>({})
 
 function createNote() {
   notesStore.createNote(createNotesParams, stateStore.activeRelativeId)
+  createNotesParams = {}
 }
 
 function saveEditedNote() {
@@ -41,20 +42,14 @@ function close() {
 
 
 <template>
-  <Modal @close-modal="notesStore.showAddNoteModal = false" :model_open="notesStore.showAddNoteModal">
-    <div class="note-form-header"
-      :class="{ 'note-form-header--light': !stateStore.darkTheme, 'note-form-header--dark': stateStore.darkTheme }">
-    </div>
+  <Modal cancel-title="Cancel" @close-modal="notesStore.showAddNoteModal = false"
+    :model_open="notesStore.showAddNoteModal">
     <div class="note-form-content"
       :class="{ 'note-form-content--light': !stateStore.darkTheme, 'note-form-content--dark': stateStore.darkTheme }">
       <form @submit.prevent="createNote">
         <div class="form-group">
           <label for="note">Note</label>
           <textarea name="note" id="note" v-model="createNotesParams.text"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="pinned">Pinned</label>
-          <input type="checkbox" v-model="createNotesParams.pinned">
         </div>
         <button class="form-submit">Save</button>
       </form>
@@ -94,10 +89,10 @@ function close() {
       <div class="content-list"
         :class="{ 'content-list--light': !stateStore.darkTheme, 'content-list--dark': stateStore.darkTheme }">
         <table class="data-table">
-          <thead class="data-table__header">
+          <thead class="data-table__header" :class="{ 'data-table__header--dark': stateStore.darkTheme }">
             <tr>
-              <th>Note</th>
-              <th>Pinned</th>
+              <th class="data-table__header-cell">Note</th>
+              <th class="data-table__header-cell" style="width: 60px; ">Pinned</th>
             </tr>
           </thead>
           <tbody>
@@ -106,8 +101,8 @@ function close() {
               'data-table__row--dark': stateStore.darkTheme,
               'data-table__row--selected': notesStore.activeNoteId == note.id
             }" @click="notesStore.activeNote = note; notesStore.activeNoteId = note.id">
-              <td>{{ note.text }}</td>
-              <td>{{ note.pinned }}</td>
+              <td class="data-table__cell">{{ note.text }}</td>
+              <td class="data-table__cell" style="width: 60px; ">{{ note.pinned ? '✅' : '' }}</td>
             </tr>
           </tbody>
         </table>
@@ -149,22 +144,22 @@ function close() {
       <div class="content-list"
         :class="{ 'content-list--light': !stateStore.darkTheme, 'content-list--dark': stateStore.darkTheme }">
         <table class="data-table">
-          <thead class="data-table__header">
+          <thead class="data-table__header" :class="{ 'data-table__header--dark': stateStore.darkTheme }">
             <tr>
-              <th>file name</th>
-              <th>file type</th>
-              <th>Pinned</th>
+              <th class="data-table__header-cell">File Name</th>
+              <th class="data-table__header-cell">File Type</th>
+              <th class="data-table__header-cell" style="width: 40px; ">Pinned</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="tbody" :class="{ 'tbody--dark': stateStore.darkTheme }">
             <tr v-for="file in filesStore.files" :key="file.id" class="data-table__row" :class="{
               'data-table__row--light': !stateStore.darkTheme,
               'data-table__row--dark': stateStore.darkTheme,
               'data-table__row--selected': filesStore.activeFileId == file.id
             }" @click="filesStore.activeFile = file; filesStore.activeFileId = file.id">
-              <td>{{ file.fileName }}</td>
-              <td>{{ file.type }}</td>
-              <td>{{ file.pinned }}</td>
+              <td class="data-table__cell">{{ file.fileName }}</td>
+              <td class="data-table__cell">{{ file.type }}</td>
+              <td class="data-table__cell" style="width: 40px;">{{ file.pinned ? '✅' : '' }}</td>
             </tr>
           </tbody>
         </table>
@@ -175,7 +170,7 @@ function close() {
         <button class="action-button"
           :class="{ 'action-button--light': !stateStore.darkTheme, 'action-button--dark': stateStore.darkTheme }"
           @click="openFile">
-          Add Note
+          Add File
         </button>
 
         <div v-if="filesStore.activeFileId > 0">
@@ -197,168 +192,6 @@ function close() {
           </button>
         </div>
       </div>
-      <!-- ... rest of the template -->
     </div>
   </div>
 </template>
-
-
-<style scoped>
-.notes-panel {
-  height: 320px;
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-top: 1px solid var(--clr-frost3);
-  font-family: 'Arial', sans-serif;
-}
-
-.notes-panel--light {
-  background: var(--clr-light2);
-}
-
-.notes-panel--dark {
-  background: var(--clr-dark2);
-}
-
-.notes-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.225rem;
-  border-bottom: 1px solid var(--clr-frost3);
-}
-
-.notes-nav--light {
-  background: var(--clr-light1);
-}
-
-.notes-nav--dark {
-  background: var(--clr-dark1);
-}
-
-.nav-tab {
-  border: none;
-  padding: 5px 10px;
-  margin: 0 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.nav-tab--light {
-  background: var(--clr-light2);
-  color: var(--clr-dark);
-}
-
-.nav-tab--dark {
-  background: var(--clr-dark2);
-  color: var(--clr-light);
-}
-
-.nav-tab--active {
-  background: var(--clr-frost);
-  color: var(--clr-light);
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: calc(100% - 50px);
-}
-
-.content-list {
-  overflow-y: auto;
-  border-right: 1px solid var(--clr-frost3);
-}
-
-.content-list--light {
-  background: var(--clr-light);
-}
-
-.content-list--dark {
-  background: var(--clr-dark);
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.data-table__header {
-  position: sticky;
-  top: 0;
-}
-
-.data-table__header--light {
-  background: var(--clr-light1);
-}
-
-.data-table__header--dark {
-  background: var(--clr-dark1);
-}
-
-.data-table__row {
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.data-table__row--light {
-  background: var(--clr-light);
-  color: var(--clr-dark);
-}
-
-.data-table__row--dark {
-  background: var(--clr-dark);
-  color: var(--clr-light);
-}
-
-.data-table__row--selected {
-  background: var(--clr-frost);
-  color: var(--clr-light);
-}
-
-.action-button {
-  margin: 5px 0;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.action-button--light {
-  background: var(--clr-frost3);
-  color: var(--clr-dark);
-}
-
-.action-button--dark {
-  background: var(--clr-frost);
-  color: var(--clr-light);
-}
-
-.action-button--delete {
-  background: var(--clr-aurora);
-  color: var(--clr-light);
-}
-
-.note-editor__textarea {
-  width: 100%;
-  min-height: 100px;
-  margin: 10px 0;
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.note-editor__textarea--light {
-  background: var(--clr-light);
-  color: var(--clr-dark);
-}
-
-.note-editor__textarea--dark {
-  background: var(--clr-dark2);
-  color: var(--clr-light);
-}
-</style>

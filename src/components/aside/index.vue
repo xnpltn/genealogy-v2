@@ -2,13 +2,16 @@
 import { useStateStore } from '../../store/state';
 import { useNotesStore } from '../../store/notes';
 import { useFilesStore } from '../../store/files';
+import { useImagesStore } from '../../store/images';
 
 const stateStore = useStateStore()
 const notesStore = useNotesStore()
 const filesStore = useFilesStore()
+const imagesStore = useImagesStore()
 function resetState(tabIndex: number) {
   notesStore.activeNoteId = 0
   filesStore.activeFileId = 0
+  imagesStore.activeImageId = 0
   stateStore.setShowNotesToFalse()
   stateStore.changeActiveTab(tabIndex)
 }

@@ -23,6 +23,22 @@ pub async fn update_relative(
         return Err("Invalid State".to_string());
     }
 
+    if !utils::is_valid_state(&relative.state.clone().unwrap_or_default()) {
+        return Err("Invalid State".to_string());
+    }
+
+    if !utils::is_valid_date(&relative.birthday.clone().unwrap_or_default()) {
+        return Err("Invalid Date".to_string());
+    }
+    if !utils::is_valid_date(&relative.died_at.clone().unwrap_or_default()) {
+        return Err("Invalid Date".to_string());
+    }
+
+    let sqlite_birthday = utils::sqlite_date(relative.birthday.clone().unwrap_or_default())
+        .map_err(|e| e.to_string())?;
+    let sqlite_diedat = utils::sqlite_date(relative.birthday.clone().unwrap_or_default())
+        .map_err(|e| e.to_string())?;
+
     sqlx::query(
         r#"
         UPDATE 
@@ -55,8 +71,8 @@ pub async fn update_relative(
     .bind(relative.sameness)
     .bind(relative.lost_reason)
     .bind(relative.sex)
-    .bind(relative.birthday)
-    .bind(relative.died_at)
+    .bind(sqlite_birthday)
+    .bind(sqlite_diedat)
     .bind(relative.first_name)
     .bind(relative.middle_name)
     .bind(relative.last_name)
@@ -203,6 +219,30 @@ pub async fn unpin_file(app: AppHandle, file_id: u32) -> Result<(), String> {
     "#,
     )
     .bind(file_id)
+    .execute(pool.deref())
+    .await
+    .map_err(|e| {
+        println!("error pining file: err: {}", e.to_string());
+        e.to_string()
+    })?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn pin_image(app: AppHandle, image_id: u16) -> Result<(), String> {
+    let state = app.state::<types::State>();
+    let pool = state.pool.clone();
+    sqlx::query(
+        r#"
+        UPDATE 
+            image 
+        SET 
+            pinned = 1 
+        WHERE 
+            id = $1;
+    "#,
+    )
+    .bind(image_id)
     .execute(pool.deref())
     .await
     .map_err(|e| {

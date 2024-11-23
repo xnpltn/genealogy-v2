@@ -4,12 +4,16 @@ import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import type { CreateRelativeParams } from '../utils/types';
 import { useRelativesStore } from '../store/relatives';
 import { useStateStore } from '../store/state';
-import Modal from './Modal.vue';
+import { useImagesStore } from '../store/images';
 import { open } from '@tauri-apps/plugin-dialog';
-import UpdateForm from './UpdateForm.vue';
+import { errorTitle, errorValue, showError } from '../composables/error';
+
+import FormInput from './form/FormInput.vue'
+import FormSelect from './form/FormSelect.vue';
 
 const relativesStore = useRelativesStore()
 const stateStore = useStateStore()
+const imagesStore = useImagesStore()
 const chosenImage = ref("")
 
 onMounted(() => {
@@ -20,18 +24,23 @@ onMounted(() => {
 const newRelative = reactive({ sameness: 0, hotness: 0, crazy: 0, employable: 0, swarthy: 0, pinned: false, sex: 'male' }) as CreateRelativeParams;
 function save() {
   let re = newRelative as CreateRelativeParams
-  invoke("create_relative", { newRelative: re }).then(() => {
+
+  invoke("create_relative", { newRelative: re }).then((rel) => {
     stateStore.activeTab = 0
+    let relative = rel as { id: number }
+    if (chosenImage.value.length && relative.id > 0) {
+      imagesStore.createImage(chosenImage.value, relative.id)
+    }
   }).catch(e => {
-    stateStore.errorValue = `${e}`
-    stateStore.showError = true
+    errorValue.value = `${e}`
+    showError.value = true
+    errorTitle.value = "Error Creating Relative"
     console.log(e)
   })
 }
 
 function uploadImage() {
-
-  open({ multiple: false, directory: false, filters: [{ name: 'Image', extensions: ['jpg', 'png'] }] }).then((file) => {
+  open({ multiple: false, directory: false, filters: [{ name: 'Image', extensions: ['jpg', 'png', 'jpeg', 'webp', 'ico'] }] }).then((file) => {
     if (file) {
       chosenImage.value = file
     }
@@ -39,133 +48,69 @@ function uploadImage() {
 }
 </script>
 <template>
-  <Modal class="error_modal" :model_open="stateStore.showError"
-    @close-modal="stateStore.showError = false; stateStore.errorValue = ''">
-    {{ stateStore.errorValue }}
-  </Modal>
-  <div class="container">
-    <div class="main-container">
-      <div class="form-container">
+  <div class="container" :class="{ 'container_black': stateStore.darkTheme }">
+    <div class="main-container" :class="{ 'main-container_black': stateStore.darkTheme }">
+      <div class="form-container" :class="{ 'form-container_black': stateStore.darkTheme }">
         <form class="form" @submit.prevent="save">
           <!-- names -->
           <div class="form-group" id="names">
-            <div class="input-container">
-              <label for="firstName" class="input-label">First Name</label>
-              <input type="text" id="firstName" name="firstName" class="form-imput" v-model="newRelative.firstName">
-            </div>
-            <div class="input-container">
-              <label for="middleName" class="input-label">Middle Name</label>
-              <input type="text" id="middleName" name="middleName" class="form-imput" v-model="newRelative.middleName">
-            </div>
-            <div class="input-container">
-              <label for="secondName" class="input-label">Last Name</label>
-              <input type="text" id="secondName" name="secondName" class="form-imput" v-model="newRelative.lastName">
-            </div>
-            <div class="input-container">
-              <label for="secondName" class="input-label">Sex</label>
-              <select name="sex" id="sex" class="form-select" v-model="newRelative.sex">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-            <div class="input-container">
-              <label for="birthday" class="input-label">Birthday</label>
-              <input name="birthday" id="birthday" class="form-input" v-model="newRelative.birthday">
-            </div>
-            <div class="input-container">
-              <label for="birthday" class="input-label">Dies AT</label>
-              <input name="diedAt" id="diedAt" class="form-input" v-model="newRelative.diedAt">
-            </div>
+            <FormInput title="First Name" typ="text" name="firstName" v-model="newRelative.firstName" />
+            <FormInput title="Middle Name" typ="text" name="middleName" v-model="newRelative.middleName" />
+            <FormInput title="Last Name" typ="text" name="lastName" v-model="newRelative.lastName" />
+            <FormSelect v-model="newRelative.sex" name="sex" label="Sex"
+              :options="[{ value: 'male', name: 'Male' }, { value: 'female', name: 'Female' }]" />
+            <FormInput title="Birthday" typ="text" name="birthday" v-model="newRelative.birthday" />
+            <FormInput title="Died At" typ="text" name="diedAt" v-model="newRelative.diedAt" />
           </div>
-          <!-- contacts-->
+
+          <!-- contacts -->
           <div class="form-group" id="contacts">
-            <div class="input-container">
-              <label for="email" class="input-label">Email</label>
-              <input type="text" id="email" name="email" class="form-imput" v-model="newRelative.email">
-            </div>
-            <div class="input-container">
-              <label for="phone" class="input-label">Phone</label>
-              <input type="text" id="phone" name="phone" class="form-imput" v-model="newRelative.phone">
-            </div>
-            <div class="input-container">
-              <label for="state" class="input-label">State</label>
-              <input type="text" id="state" name="state" class="form-imput" v-model="newRelative.state">
-            </div>
-            <div class="input-container">
-              <label for="address" class="input-label">Address</label>
-              <input type="text" id="address" name="address" class="form-imput" v-model="newRelative.address">
-            </div>
+            <FormInput title="Email" typ="text" name="email" v-model="newRelative.email" />
+            <FormInput title="Phone" typ="text" name="phone" v-model="newRelative.phone" />
+            <FormInput title="State" typ="text" name="state" v-model="newRelative.state" />
+            <FormInput title="Address" typ="text" name="address" v-model="newRelative.address" />
           </div>
+
           <!-- parents -->
           <div class="form-group" id="parents">
-            <div class="input-container">
-              <label for="father" class="input-label">Father</label>
-              <select name="father" id="father" class="form-select" v-model="newRelative.fatherId">
-                <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
-                  {{ father.firstName + ' ' + father.lastName }}
-                </option>
-              </select>
-            </div>
-            <div class="input-container">
-              <label for="father" class="input-label">Mother</label>
-              <select name="mother" id="mother" class="form-select" v-model="newRelative.motherId">
-                <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
-                  {{ father.firstName + ' ' + father.lastName }}
-                </option>
-              </select>
-            </div>
+            <FormSelect v-model="newRelative.fatherId" name="father" label="Father"
+              :options="relativesStore.maleParents.map(father => ({ value: father.id, name: `${father.firstName} ${father.lastName}` }))" />
+            <FormSelect v-model="newRelative.motherId" name="mother" label="Mother"
+              :options="relativesStore.femaleParents.map(mother => ({ value: mother.id, name: `${mother.firstName} ${mother.lastName}` }))" />
           </div>
-          <!-- additional fields -->
+
           <div class="form-group" id="addition">
-            <div class="input-container" v-if="newRelative.sex == 'male'">
-              <label for="employable" class="input-label">Employable</label>
-              <input type="number" id="employable" name="employable" class="form-imput"
-                v-model="newRelative.employable">
-            </div>
-            <div class="input-container" v-if="newRelative.sex == 'female'">
-              <label for="employable" class="input-label">Swarthy</label>
-              <input type="number" id="swarthy" name="swarthy" class="form-imput" v-model="newRelative.swarthy">
-            </div>
-            <div class="input-container" v-if="newRelative.sex == 'female'">
-              <label for="hotness" class="input-label">Hotness</label>
-              <input type="number" id="hotness" name="hotness" class="form-imput" v-model="newRelative.hotness">
-            </div>
-            <div class="input-container" v-if="newRelative.sex == 'female'">
-              <label for="crazy" class="input-label">Crazy</label>
-              <input type="number" id="crazy" name="creazy" class="form-imput" v-model="newRelative.crazy">
-            </div>
-            <div class="input-container">
-              <label for="lostReason" class="input-label">Lost Reason</label>
-              <select name="lostReason" id="lostReason" class="form-select" v-model="newRelative.lostReason">
-                <option value="1">Reason 1</option>
-                <option value="2">Reason 2</option>
-              </select>
-            </div>
+            <FormInput title="Employable" typ="number" name="employable" v-model="newRelative.employable"
+              v-if="newRelative.sex === 'male'" />
+            <FormInput title="Swarthy" typ="number" name="swarthy" v-model="newRelative.swarthy"
+              v-if="newRelative.sex === 'female'" />
+            <FormInput title="Hotness" typ="number" name="hotness" v-model="newRelative.hotness"
+              v-if="newRelative.sex === 'female'" />
+            <FormInput title="Crazy" typ="number" name="crazy" v-model="newRelative.crazy"
+              v-if="newRelative.sex === 'female'" />
+            <FormSelect v-model="newRelative.lostReason" name="lostReason" label="Lost Reason"
+              :options="[{ value: '1', name: 'Reason 1' }, { value: '2', name: 'Reason 2' }]" />
           </div>
 
           <div class="form-group" id="pinned">
-            <div class="input-container">
-              <label for="pinned" class="input-label">Sameness</label>
-              <input type="number" id="sameness" name="sameness" class="form-imput" v-model="newRelative.sameness">
-            </div>
-            <div class="input-container">
-              <label for="pinned" class="input-label">Pinned</label>
-              <input type="checkbox" id="pinned" name="pinned" class="form-imput" v-model="newRelative.pinned">
-            </div>
+            <FormInput title="Sameness" typ="number" name="sameness" v-model="newRelative.sameness" />
+            <FormInput title="Pinned" typ="checkbox" name="pinned" v-model="newRelative.pinned" />
           </div>
+
           <div class="form-group" id="button">
-            <button type="submit">Submit</button>
+            <button class="submit-button" :class="{ 'submit-button_black': stateStore.darkTheme }" type="submit">
+              Submit
+            </button>
           </div>
         </form>
       </div>
     </div>
     <div class="image-container">
       <div class="image-section">
-        <div style="height: 200px; width: 200px; background-color: red;">
+        <div style="height: 300px; width: 300px; border: 1px solid grey; border-radius: 5px;">
           <img v-if="chosenImage.length" :src="convertFileSrc(chosenImage)" alt="">
         </div>
         <button @click="uploadImage">Upload Image</button>
-
       </div>
     </div>
   </div>

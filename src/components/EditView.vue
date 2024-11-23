@@ -8,6 +8,10 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 import { useStateStore } from '../store/state';
 import { useRelativesStore } from '../store/relatives';
 import { useImagesStore } from '../store/images';
+import { errorTitle, errorValue, showError } from '../composables/error';
+import { convertDateToMMDDYY } from '../composables/date'
+import FormInput from './form/FormInput.vue';
+import FormSelect from './form/FormSelect.vue';
 
 const relativesStore = useRelativesStore()
 const stateStore = useStateStore()
@@ -21,16 +25,20 @@ const chosenImage = ref('')
 onMounted(() => {
   relativesStore.fetchMaleParents(stateStore.activeRelativeId)
   relativesStore.fetchFemaleParants(stateStore.activeRelativeId)
+  imageStore.loadImages(stateStore.activeRelativeId)
 })
 
 watchEffect(() => {
   newRelative.sex = activeRelative.value.sex
 })
 
+
 onMounted(() => {
   console.log(stateStore.activeRelativeId)
   invoke("relative_by_id", { id: stateStore.activeRelativeId }).then((val) => {
     activeRelative.value = val as RelativeIndividual
+    activeRelative.value.birthday = convertDateToMMDDYY(activeRelative.value.birthday)
+    activeRelative.value.diedAt = convertDateToMMDDYY(activeRelative.value.diedAt)
   }).catch(e => {
     console.log(e)
   })
@@ -56,6 +64,9 @@ function saveRelative() {
   invoke("update_relative", { relative: { ...activeRelative.value, ...newRelative } }).then(() => {
     stateStore.activeTab = 0
   }).catch(e => {
+    showError.value = true
+    errorTitle.value = "Error Saving Relative"
+    errorValue.value = `${e}`
     console.log(e)
   })
 }
@@ -66,7 +77,9 @@ function deleteRelative() {
       invoke("delete_relative", { relativeId: stateStore.activeRelativeId }).then(() => {
         stateStore.activeTab = 0
       }).catch(e => {
-        console.log(e)
+        showError.value = true
+        errorTitle.value = "Error Deleting Relative"
+        errorValue.value = `${e}`
       })
     }
   }).catch(e => {
@@ -88,139 +101,73 @@ function uploadImage() {
 </script>
 
 <template>
-  <div>
-    <button class="" @click="deleteRelative">delete</button>
-  </div>
-  <div class="container">
-    <div class="main-container">
-      <div class="form-container">
+  <div class="container" :class="{ 'container_black': stateStore.darkTheme }">
+    <div class="main-container" :class="{ 'main-container_black': stateStore.darkTheme }">
+      <div class="form-container" :class="{ 'form-container_black ': stateStore.darkTheme }">
         <form class="form" @submit.prevent="saveRelative">
           <!-- names -->
           <div class="form-group" id="names">
-            <div class="input-container">
-              <label for="firstName" class="input-label">First Name</label>
-              <input type="text" id="firstName" name="firstName" class="form-imput" v-model="activeRelative.firstName">
-            </div>
-            <div class="input-container">
-              <label for="middleName" class="input-label">Middle Name</label>
-              <input type="text" id="middleName" name="middleName" class="form-imput"
-                v-model="activeRelative.middleName">
-            </div>
-            <div class="input-container">
-              <label for="secondName" class="input-label">Last Name</label>
-              <input type="text" id="secondName" name="secondName" class="form-imput" v-model="activeRelative.lastName">
-            </div>
-            <div class="input-container">
-              <label for="secondName" class="input-label">Sex</label>
-              <select name="sex" id="sex" class="form-select" v-model="activeRelative.sex">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-            <div class="input-container">
-              <label for="birthday" class="input-label">Birthday</label>
-              <input name="birthday" id="birthday" class="form-input" v-model="activeRelative.birthday">
-            </div>
-            <div class="input-container">
-              <label for="birthday" class="input-label">Died At</label>
-              <input name="diedAt" id="diedAt" class="form-input" v-model="activeRelative.diedAt">
-            </div>
-          </div>
-          <!-- contacts-->
-          <div class="form-group" id="contacts">
-            <div class="input-container">
-              <label for="email" class="input-label">Email</label>
-              <input type="text" id="email" name="email" class="form-imput" v-model="activeRelative.email">
-            </div>
-            <div class="input-container">
-              <label for="phone" class="input-label">Phone</label>
-              <input type="text" id="phone" name="phone" class="form-imput" v-model="activeRelative.phone">
-            </div>
-            <div class="input-container">
-              <label for="state" class="input-label">State</label>
-              <input type="text" id="state" name="state" class="form-imput" v-model="activeRelative.state">
-            </div>
-            <div class="input-container">
-              <label for="address" class="input-label">Address</label>
-              <input type="text" id="address" name="address" class="form-imput" v-model="activeRelative.address">
-            </div>
-          </div>
-          <!-- parents -->
-          <div class="form-group" id="remove-parents">
-            <div class="input-container" v-if="activeRelative.mother || newRelative.fatherId">
-              <label for="removeMother" class="input-label">Remove Father</label>
-              <input type="checkbox" id="removeFather" name="removeFather" class="form-imput" v-model="removeFather">
-            </div>
-            <div class="input-container" v-if="activeRelative.father || newRelative.motherId">
-              <label for="removeMother" class="input-label">Remove Mother</label>
-              <input type="checkbox" id="removeMother" name="removeMother" class="form-imput" v-model="removeMother">
-            </div>
-          </div>
-          <div class="form-group" id="parents">
-            <div class="input-container">
-              <label for="father" class="input-label">Father</label>
-              <select name="father" id="father" class="form-select" v-model="newRelative.fatherId">
-                <option v-for="father in relativesStore.maleParents" :value="father.id" :key="father.id">
-                  {{ father.firstName + ' ' + father.lastName }}
-                </option>
-              </select>
-            </div>
-            <div class="input-container">
-              <label for="father" class="input-label">Mother</label>
-              <select name="mother" id="mother" class="form-select" v-model="newRelative.motherId">
-                <option v-for="mother in relativesStore.femaleParents" :value="mother.id" :key="mother.id">
-                  {{ mother.firstName + ' ' + mother.lastName }}
-                </option>
-              </select>
-            </div>
-          </div>
-          <!-- additional fields -->
-          <div class="form-group" id="addition">
-            <div class="input-container" v-if="activeRelative.sex == 'male'">
-              <label for="employable" class="input-label">Employable</label>
-              <input type="text" id="employable" name="employable" class="form-imput"
-                v-model="activeRelative.employable">
-            </div>
-            <div class="input-container" v-if="activeRelative.sex == 'female'">
-              <label for="employable" class="input-label">Swarthy</label>
-              <input type="text" id="swarthy" name="swarthy" class="form-imput" v-model="activeRelative.swarthy">
-            </div>
-            <div class="input-container" v-if="activeRelative.sex == 'female'">
-              <label for="hotness" class="input-label">Hotness</label>
-              <input type="text" id="hotness" name="hotness" class="form-imput" v-model="activeRelative.hotness">
-            </div>
-            <div class="input-container" v-if="activeRelative.sex == 'female'">
-              <label for="crazy" class="input-label">Crazy</label>
-              <input type="text" id="crazy" name="creazy" class="form-imput" v-model="activeRelative.crazy">
-            </div>
-            <div class="input-container">
-              <label for="lostReason" class="input-label">Lost Reason</label>
-              <select name="lostReason" id="lostReason" class="form-select" v-model="activeRelative.lostReason">
-                <option value="1">Reason 1</option>
-                <option value="2">Reason 2</option>
-              </select>
-            </div>
+            <FormInput type="text" name="firstName" v-model="activeRelative.firstName" title="First Name" />
+            <FormInput type="text" name="middleName" v-model="activeRelative.middleName" title="Middle Name" />
+            <FormInput type="text" name="secondName" v-model="activeRelative.lastName" title="Last Name" />
+            <FormSelect :options="[{ value: 'male', name: 'Male' }, { value: 'female', name: 'Female' }]" label="Sex"
+              name="sex" v-model="activeRelative.sex" />
+            <FormInput type="text" name="birthday" v-model="activeRelative.birthday" title="Birthday" />
+            <FormInput type="text" name="diedAt" v-model="activeRelative.diedAt" title="Died At" />
           </div>
 
-          <div class="form-group" id="pinned">
-            <div class="input-container">
-              <label for="pinned" class="input-label">Sameness</label>
-              <input type="text" id="sameness" name="sameness" class="form-imput" v-model="activeRelative.sameness">
-            </div>
-            <div class="input-container">
-              <label for="pinned" class="input-label">Pinned</label>
-              <input type="checkbox" id="pinned" name="pinned" class="form-imput" v-model="activeRelative.pinned">
-            </div>
+          <!-- contacts -->
+          <div class="form-group" id="contacts">
+            <FormInput type="text" name="email" v-model="activeRelative.email" title="Email" />
+            <FormInput type="text" name="phone" v-model="activeRelative.phone" title="Phone" />
+            <FormInput type="text" name="state" v-model="activeRelative.state" title="State" />
+            <FormInput type="text" name="address" v-model="activeRelative.address" title="Address" />
           </div>
-          <div class="form-group" id="button">
-            <button type="submit">Save</button>
+
+          <!-- parents -->
+          <div class="form-group" id="remove-parents">
+            <FormInput v-if="activeRelative.father || newRelative.fatherId" type="checkbox" name="removeFather"
+              v-model="removeFather" title="Remove Father" />
+            <FormInput v-if="activeRelative.mother || newRelative.motherId" type="checkbox" name="removeMother"
+              v-model="removeMother" title="Remove Mother" />
+          </div>
+          <div class="form-group" id="parents">
+            <FormSelect
+              :options="relativesStore.maleParents.map(father => ({ value: father.id, name: father.firstName + ' ' + father.lastName }))"
+              label="Father" name="father" v-model="newRelative.fatherId" />
+            <FormSelect
+              :options="relativesStore.femaleParents.map(mother => ({ value: mother.id, name: mother.firstName + ' ' + mother.lastName, }))"
+              label="Mother" name="mother" v-model="newRelative.motherId" />
+          </div>
+
+          <!-- additional fields -->
+          <div class="form-group" id="addition">
+            <FormInput v-if="activeRelative.sex == 'male'" typ="number" name="employable"
+              v-model="activeRelative.employable" title="Employable" />
+            <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="swarthy"
+              v-model="activeRelative.swarthy" title="Swarthy" />
+            <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="hotness"
+              v-model="activeRelative.hotness" title="Hotness" />
+            <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="crazy" v-model="activeRelative.crazy"
+              title="Crazy" />
+            <FormSelect :options="[{ value: 'reason 1', name: 'Reason 1' }, { value: 'reason 2', name: 'Reason 2' }]"
+              label="Lost Reason" name="lostReason" v-model="activeRelative.lostReason" />
+          </div>
+
+          <div class="form-group last" id="pinned">
+            <FormInput type="text" name="sameness" v-model="activeRelative.sameness" title="Sameness" />
+            <FormInput typ="checkbox" name="pinned" v-model="activeRelative.pinned" title="Pinned" />
+          </div>
+          <div class="form-group last" id="button">
+            <button type="submit" class="submit-button"
+              :class="{ 'submit-button_black': stateStore.darkTheme }">Save</button>
           </div>
         </form>
       </div>
       <div class="meta-container">
         <div class="meta-card">
-          <div class="metainfo">
-            <h3>Metadata Information</h3>
+          <div class="metainfo" :class="{ 'metainfo__black': stateStore.darkTheme }">
+            <h3 class="metainfo__header">Metadata Information</h3>
             <div class="info-item">
               <span class="label">ID:</span>
               <span class="value">{{ activeRelative.id }}</span>
@@ -233,6 +180,10 @@ function uploadImage() {
               <span class="label">Updated At:</span>
               <span class="value">{{ activeRelative.updatedAt }}</span>
             </div>
+            <hr class="divider">
+            <div>
+              <button class="delete-button" @click="deleteRelative">delete</button>
+            </div>
           </div>
         </div>
       </div>
@@ -240,29 +191,57 @@ function uploadImage() {
     <div class="image-container">
       <div class="image-section">
         <div
-          style="height: 200px; width: 200px;display: flex; justify-content: center; align-items: center; overflow: hidden;">
-          <img v-if="chosenImage.length" :src="convertFileSrc(chosenImage)" alt=""
-            style="max-width: 100%; max-height: 100%; object-fit: contain; width: auto; height: auto;">
+          style="height: 300px; width: 300px;display: flex; justify-content: center; align-items: center; overflow: hidden;">
+          <img v-if="chosenImage.length || imageStore.images.length"
+            :src="chosenImage.length ? convertFileSrc(chosenImage) : convertFileSrc(imageStore.images[0].filename)"
+            alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; width: auto; height: auto;">
         </div>
-        <button @click="uploadImage">Upload Image</button>
+        <div style="display: flex; gap: var(--size-sm);">
+          <button @click="uploadImage">Upload Image</button>
+          <button v-if="imageStore.activeImageId > 0"
+            @click="imageStore.deleteImage(imageStore.activeImageId, stateStore.activeRelativeId); chosenImage = '';"
+            class="delete-button">Delete</button>
+        </div>
       </div>
-      <div class="table-section">
-        table
-        <table>
-          <thead>
+      <div class="table-section" v-if="imageStore.images.length">
+        <table :class="{
+          'images-table': true,
+          'images-table--light': !stateStore.darkTheme,
+          'images-table--dark': stateStore.darkTheme
+        }">
+          <thead :class="{
+            'data-grid__header': true,
+            'data-grid__header--light': !stateStore.darkTheme,
+            'data-grid__header--dark': stateStore.darkTheme
+          }">
             <tr>
-              <th> filename </th>
+              <th :class="{
+                'data-grid__header-cell': true,
+                'data-grid__header-cell--light': !stateStore.darkTheme,
+                'data-grid__header-cell--dark': stateStore.darkTheme
+              }">
+                filename
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr @click="chosenImage = image.filename" v-for="image in imageStore.images">
-              <td>
+            <tr
+              @click="chosenImage = image.filename; imageStore.pinImage(image.id); imageStore.activeImageId = image.id"
+              v-for="image in imageStore.images" :key="image.id" :class="{
+                'data-grid__row': true,
+                'data-grid__row--light': !stateStore.darkTheme,
+                'data-grid__row--dark': stateStore.darkTheme
+              }">
+              <td :class="{
+                'data-grid__cell': true,
+                'data-grid__cell--light': !stateStore.darkTheme,
+                'data-grid__cell--dark': stateStore.darkTheme
+              }">
                 {{ image.filename.split('/').pop() }}
               </td>
             </tr>
           </tbody>
         </table>
-
       </div>
     </div>
   </div>
@@ -273,5 +252,30 @@ function uploadImage() {
   padding: var(--size-sm);
   display: grid;
   grid-template-columns: 2fr 1fr;
+}
+
+.delete-button {
+  background-color: red;
+  border: none;
+  border-radius: var(--size-xss);
+  color: var(--clr-light);
+  padding-top: 5px;
+  padding-left: var(--size-sm);
+  padding-right: var(--size-sm);
+  padding-bottom: 5px;
+  border-radius: 5px;
+}
+
+.delete-button:hover {
+  font-weight: bold;
+}
+
+.metainfo__black {
+  color: var(--clr-light);
+}
+
+.metainfo__header {
+  margin-bottom: 5px;
+  margin-top: 1px;
 }
 </style>

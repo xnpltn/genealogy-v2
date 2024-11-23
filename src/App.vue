@@ -6,12 +6,30 @@ import Employees from "./components/tables/Employees.vue";
 import AddNewForm from "./components/AddNewForm.vue";
 import NoteSection from "./components/NoteSection.vue";
 import EditView from "./components/EditView.vue";
+import ErrorModal from "./components/ErrorModal.vue";
 import { useStateStore } from "./store/state";
+import { watch } from 'vue'
+
 const stateStore = useStateStore()
+
+
+watch(
+  () => stateStore.darkTheme,
+  (isDark) => {
+    document.body.classList.toggle('dark-theme', isDark)
+    if (isDark) {
+      { document.body.style.backgroundColor = 'var(--clr-dark1)' }
+    } else {
+      { document.body.style.backgroundColor = 'var(--clr-light1)' }
+    }
+  },
+  { immediate: true }
+)
 
 </script>
 
 <template>
+  <ErrorModal />
   <main class="container">
     <Aside />
     <NoteSection v-if="stateStore.showNotes && stateStore.hasActiveRelative" />

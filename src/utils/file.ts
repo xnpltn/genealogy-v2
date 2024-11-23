@@ -27,6 +27,7 @@ pub struct Image {
 */
 
 export type Image = {
+  id: number
   filename: string
 }
 

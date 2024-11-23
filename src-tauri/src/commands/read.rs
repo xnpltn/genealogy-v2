@@ -253,11 +253,13 @@ pub async fn images_by_relative_id(
     let images: Vec<types::Image> = sqlx::query_as(
         r#"
             SELECT 
-                filename
+                id, filename
             FROM 
                 image
             WHERE
                 relative_id = $1 
+            ORDER BY
+                updated_at DESC
         "#,
     )
     .bind(relative_id)

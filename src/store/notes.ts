@@ -5,6 +5,7 @@ import { type Ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { type CreateNoteParams } from "../utils/notes";
 import { confirm } from "@tauri-apps/plugin-dialog";
+import { errorValue, errorTitle, showError } from "../composables/error";
 
 export const useNotesStore = defineStore('notes', () => {
   const notes: Ref<Note[], Note[]> = ref([])
@@ -22,11 +23,9 @@ export const useNotesStore = defineStore('notes', () => {
     invoke("notes_by_relative_id", { activeRelativeId: id }).then((val) => {
       notes.value = val as Array<Note>;
     }).catch(e => {
-      if (e instanceof Error) {
-        console.log(e.message, e.stack, e.name)
-      } else {
-        console.log(e)
-      }
+      showError.value = true
+      errorTitle.value = "Error Getting Note"
+      errorValue.value = `${e}`
     })
   }
   function createNote(params: Partial<CreateNoteParams>, relative_id: number) {
@@ -37,7 +36,9 @@ export const useNotesStore = defineStore('notes', () => {
         console.log("created note")
         getNotes(relative_id)
       }).catch(e => {
-        console.log(e)
+        showError.value = true
+        errorTitle.value = "Error  Saving Note"
+        errorValue.value = `${e}`
       })
   }
   function saveEditedNote(relative_id: number) {
@@ -46,7 +47,9 @@ export const useNotesStore = defineStore('notes', () => {
       activeNoteId.value = 0
       getNotes(relative_id)
     }).catch(e => {
-      console.log(e)
+      showError.value = true
+      errorTitle.value = "Error  Saving Note"
+      errorValue.value = `${e}`
     })
   }
 
@@ -57,7 +60,9 @@ export const useNotesStore = defineStore('notes', () => {
           activeNoteId.value = 0
           getNotes(relative_id)
         }).catch(e => {
-          console.log(e)
+          showError.value = true
+          errorTitle.value = "Error  Deleting Note"
+          errorValue.value = `${e}`
         })
       }
     }).catch(e => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ model_open: boolean, title?: string }>()
+defineProps<{ model_open: boolean, title?: string, cancelTitle?: string }>()
 const emits = defineEmits(['close-modal'])
 
 function closeModal() {
@@ -11,13 +11,13 @@ function closeModal() {
 <template>
   <div class="modal" v-if="model_open">
     <div class="modal__container">
-      <div class="header">
-        <h1>{{ title }}</h1>
-        <button @click="closeModal">Close</button>
+      <div class="model__header">
+        <div class="modal__title" v-if="title?.length">
+          <h1>{{ title }}</h1>
+        </div>
+        <button class="cancelButton" @click="closeModal">{{ cancelTitle || "Close" }}</button>
       </div>
-
       <div>
-        // another card here
         <slot />
       </div>
     </div>
@@ -41,21 +41,48 @@ function closeModal() {
 }
 
 .modal__container {
-  height: 250px;
-  width: 700px;
+  height: auto;
+  width: auto;
   background: white;
   border: none;
   border-radius: var(--size-sm);
   padding: var(--size-sm);
 }
 
-.modal__tabbar {
-  background-color: red;
-  display: flex;
-  justify-content: end;
+.model__header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 15px !important;
+  border-bottom: 2px solid var(--clr-light2) !important;
 }
 
-.modal__form-container {
-  width: 100%;
+.modal__title {
+  flex: 1 !important;
+  text-align: center !important;
+}
+
+.modal__title h1 {
+  margin: 0 !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+  color: var(--clr-dark) !important;
+}
+
+cancelButton {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--clr-dark) !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+}
+
+cancelButton:hover {
+  color: var(--clr-aurora) !important;
+}
+
+cancelButton:focus {
+  outline: none !important;
 }
 </style>

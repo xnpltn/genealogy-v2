@@ -8,23 +8,34 @@ use crate::utils;
 pub async fn create_relative(
     app: AppHandle,
     new_relative: types::CreateRelativeParams,
-) -> Result<(), String> {
+) -> Result<types::CreatedRelative, String> {
     let state = app.state::<types::State>();
     let pool = state.pool.clone();
 
-    if !utils::is_valid_email(&new_relative.email.clone().unwrap_or("".to_string())) {
+    if !utils::is_valid_email(&new_relative.email.clone().unwrap_or_default()) {
         return Err("Invalid Email Adress".to_string());
     }
 
-    if !utils::is_valid_phone(&new_relative.phone.clone().unwrap_or("".to_string())) {
+    if !utils::is_valid_phone(&new_relative.phone.clone().unwrap_or_default()) {
         return Err("Invalid Phone Number".to_string());
     }
 
-    if !utils::is_valid_state(&new_relative.state.clone().unwrap_or("".to_string())) {
+    if !utils::is_valid_state(&new_relative.state.clone().unwrap_or_default()) {
         return Err("Invalid State".to_string());
     }
 
-    sqlx::query(
+    if !utils::is_valid_date(&new_relative.birthday.clone().unwrap_or_default()) {
+        return Err("Invalid Date".to_string());
+    }
+    if !utils::is_valid_date(&new_relative.died_at.clone().unwrap_or_default()) {
+        return Err("Invalid Date".to_string());
+    }
+
+    let sqlite_birthday = utils::sqlite_date(new_relative.birthday.clone().unwrap_or_default())
+        .map_err(|e| e.to_string())?;
+    let sqlite_diedat = utils::sqlite_date(new_relative.birthday.clone().unwrap_or_default())
+        .map_err(|e| e.to_string())?;
+    let rel: types::CreatedRelative = sqlx::query_as(
         r#"
     INSERT INTO relative (
         sameness, lost_reason, sex, birthday, died_at, fname, mname, lname, 
@@ -34,14 +45,14 @@ pub async fn create_relative(
     VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
         $11, $12, $13, $14, $15, $16, $17, $18, $19
-    );
+    ) RETURNING id;
     "#,
     )
     .bind(new_relative.sameness)
     .bind(new_relative.lost_reason)
     .bind(new_relative.sex)
-    .bind(new_relative.birthday)
-    .bind(new_relative.died_at)
+    .bind(sqlite_birthday)
+    .bind(sqlite_diedat)
     .bind(new_relative.first_name)
     .bind(new_relative.middle_name)
     .bind(new_relative.last_name)
@@ -56,13 +67,13 @@ pub async fn create_relative(
     .bind(new_relative.father_id)
     .bind(new_relative.state)
     .bind(new_relative.address)
-    .execute(pool.deref())
+    .fetch_one(pool.deref())
     .await
     .map_err(|e| {
         println!("error adding: {}", e.to_string());
         "Error Creating Relative".to_string()
     })?;
-    Ok(())
+    Ok(rel)
 }
 
 #[tauri::command]

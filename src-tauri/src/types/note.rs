@@ -25,7 +25,7 @@ pub struct Note {
 
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CreateNoteParams {
-    pub relative_id: u8,
+    pub relative_id: u32,
     pub text: String,
     pub pinned: bool,
 }

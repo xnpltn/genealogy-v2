@@ -129,12 +129,13 @@ END;
 
 
 CREATE TABLE IF NOT EXISTS image (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
-    relative_id      INTEGER NOT NULL,
-    filename             TEXT NOT NULL,
-    FOREIGN KEY      (relative_id) REFERENCES relative(id) ON DELETE CASCADE
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    relative_id     INTEGER NOT NULL,
+    filename        TEXT NOT NULL,
+    pinned          BOOLEAN DEFAULT 0,
+    FOREIGN KEY     (relative_id) REFERENCES relative(id) ON DELETE CASCADE
 );
 
 

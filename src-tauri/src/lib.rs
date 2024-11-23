@@ -112,6 +112,8 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 commands::update::unpin_note,
                 commands::create::create_image,
                 commands::read::images_by_relative_id,
+                commands::update::pin_image,
+                commands::delete::delete_image,
             ])
             .setup(move |app| {
                 app.manage(types::State {

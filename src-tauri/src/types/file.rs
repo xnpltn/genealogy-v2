@@ -18,6 +18,6 @@ pub struct File {
 #[derive(Debug, FromRow, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateFileParams {
-    pub relative_id: u8,
+    pub relative_id: u32,
     pub file_path: String,
 }

@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { type File } from "../utils/file";
 import { open, confirm } from '@tauri-apps/plugin-dialog';
 import { type CreateFileParams } from "../utils/file";
+import { errorValue, errorTitle, showError } from "../composables/error";
 
 
 
@@ -15,11 +16,9 @@ export const useFilesStore = defineStore('files', () => {
     invoke("files_by_relative_id", { activeRelativeId: id }).then((val) => {
       files.value = val as Array<File>
     }).catch(e => {
-      if (e instanceof Error) {
-        console.log(e.message, e.stack, e.name)
-      } else {
-        console.log(e)
-      }
+      showError.value = true
+      errorTitle.value = "Error Getting Files"
+      errorValue.value = `${e}`
     })
   }
 
@@ -30,7 +29,9 @@ export const useFilesStore = defineStore('files', () => {
         invoke("create_file", { params }).then(() => {
           getFiles(id)
         }).catch(e => {
-          console.log(e)
+          showError.value = true
+          errorTitle.value = "Error Creating Files"
+          errorValue.value = `${e}`
         })
       }
       console.log(file);
@@ -44,7 +45,9 @@ export const useFilesStore = defineStore('files', () => {
           getFiles(relative_id)
           activeFileId.value = 0
         }).catch(e => {
-          console.log(e)
+          showError.value = true
+          errorTitle.value = "Error Deleting File"
+          errorValue.value = `${e}`
         })
 
       }
@@ -59,14 +62,18 @@ export const useFilesStore = defineStore('files', () => {
         getFiles(relative_id)
         activeFileId.value = 0
       }).catch(e => {
-        console.log(e)
+        showError.value = true
+        errorTitle.value = "Error UnPining File"
+        errorValue.value = `${e}`
       })
     } else {
       invoke('pin_file', { fileId: activeFileId.value }).then(() => {
         getFiles(relative_id)
         activeFileId.value = 0
       }).catch(e => {
-        console.log(e)
+        showError.value = true
+        errorTitle.value = "Error Pining File"
+        errorValue.value = `${e}`
       })
     }
   }

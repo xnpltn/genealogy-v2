@@ -6,6 +6,7 @@ export const useStateStore = defineStore('state', () => {
   const showNotes = ref(false)
   const activeTab = ref(0)
   const showError = ref(false)
+  const errorTitle = ref('')
   const errorValue = ref('')
   const activeRelativeId = ref(0)
   const darkTheme = ref(false);
@@ -28,6 +29,7 @@ export const useStateStore = defineStore('state', () => {
   return {
     darkTheme,
     showError,
+    errorTitle,
     errorValue,
     showNotes,
     activeTab,

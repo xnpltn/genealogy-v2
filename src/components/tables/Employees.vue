@@ -57,7 +57,7 @@ function toggleNoteSection(id: number) {
           <td class="data-grid__cell">{{ relative.father }}</td>
           <td class="data-grid__cell">{{ relative.phone }}</td>
           <td class="data-grid__cell">{{ relative.email }}</td>
-          <td class="data-grid__cell data-grid__cell--pinned">{{ relative.pinned ? "pinned" : "not pinned" }}</td>
+          <td class="data-grid__cell data-grid__cell--pinned">{{ relative.pinned ? "✅ " : "" }}</td>
           <td class="data-grid__cell">{{ relative.lostReason }}</td>
           <td class="data-grid__cell">{{ relative.createdAt }}</td>
           <td class="data-grid__cell">{{ relative.updatedAt }}</td>
