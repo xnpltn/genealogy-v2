@@ -147,7 +147,7 @@ function close() {
           <thead class="data-table__header" :class="{ 'data-table__header--dark': stateStore.darkTheme }">
             <tr>
               <th class="data-table__header-cell">File Name</th>
-              <th class="data-table__header-cell">File Type</th>
+              <th class="data-table__header-cell" style="width: 80px;">File Type</th>
               <th class="data-table__header-cell" style="width: 40px; ">Pinned</th>
             </tr>
           </thead>
@@ -158,7 +158,7 @@ function close() {
               'data-table__row--selected': filesStore.activeFileId == file.id
             }" @click="filesStore.activeFile = file; filesStore.activeFileId = file.id">
               <td class="data-table__cell">{{ file.fileName }}</td>
-              <td class="data-table__cell">{{ file.type }}</td>
+              <td class="data-table__cell" style="width: 80px;">{{ file.type }}</td>
               <td class="data-table__cell" style="width: 40px;">{{ file.pinned ? '✅' : '' }}</td>
             </tr>
           </tbody>

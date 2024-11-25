@@ -77,9 +77,11 @@ function deleteRelative() {
       invoke("delete_relative", { relativeId: stateStore.activeRelativeId }).then(() => {
         stateStore.activeTab = 0
       }).catch(e => {
-        showError.value = true
-        errorTitle.value = "Error Deleting Relative"
-        errorValue.value = `${e}`
+        if (`${e}`.toLowerCase().includes("invalid args")) {
+          errorValue.value = "Error Occured while Updating relative. tip: Check if All required fields are present. (first and last names)"
+        } else {
+          errorValue.value = `${e}`
+        }
       })
     }
   }).catch(e => {
@@ -146,13 +148,13 @@ function uploadImage() {
           <!-- additional fields -->
           <div class="form-group" id="addition">
             <FormInput v-if="activeRelative.sex == 'male'" typ="number" name="employable"
-              v-model="activeRelative.employable" title="Employable" />
+              v-model="activeRelative.employable" title="Employable" :min="0" :max="10" :step="1" />
             <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="swarthy"
-              v-model="activeRelative.swarthy" title="Swarthy" />
+              v-model="activeRelative.swarthy" title="Swarthy" :min="0" :max="10" :step="1" />
             <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="hotness"
-              v-model="activeRelative.hotness" title="Hotness" />
+              v-model="activeRelative.hotness" title="Hotness" :min="0" :max="10" :step="1" />
             <FormInput v-if="activeRelative.sex == 'female'" typ="number" name="crazy" v-model="activeRelative.crazy"
-              title="Crazy" />
+              title="Crazy" :min="0" :max="10" :step="1" />
             <FormSelect :options="relativesStore.lostReasons.map(reason => ({ value: reason, name: reason }))"
               label="Lost Reason" name="lostReason" v-model="activeRelative.lostReason" />
           </div>

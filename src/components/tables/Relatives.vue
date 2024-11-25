@@ -53,8 +53,8 @@ function toggleNoteSection(id: number) {
           <th class="data-grid__header-cell">Email</th>
           <th class="data-grid__header-cell">Pinned</th>
           <th class="data-grid__header-cell">Lost Reason</th>
-          <th class="data-grid__header-cell">Created</th>
-          <th class="data-grid__header-cell">Updated</th>
+          <th class="data-grid__header-cell" width="30px">Created</th>
+          <th class="data-grid__header-cell" width="30px">Updated</th>
         </tr>
       </thead>
       <tbody>

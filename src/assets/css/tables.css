@@ -32,6 +32,7 @@
 
 .data-grid__header--dark {
   background: var(--clr-dark1);
+  color: var(--clr-light);
 }
 
 .data-grid__header-cell {
