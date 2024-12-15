@@ -35,7 +35,7 @@ pub fn is_valid_state(state: &str) -> bool {
         "VA", "WA", "WV", "WI", "WY",
     ];
 
-    state.is_empty() || valid_states.contains(&state.to_uppercase().as_str())
+    state.is_empty() || valid_states.contains(&state)
 }
 
 pub fn is_valid_date(date: &str) -> bool {

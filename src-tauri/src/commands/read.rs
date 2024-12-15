@@ -52,7 +52,7 @@ pub async fn all_females(
         LEFT JOIN 
             relative f ON r.father_id = f.id
         WHERE
-            LOWER(r.sex) = LOWER('female') AND r.hotness > 0
+            LOWER(r.sex) = LOWER('female') AND r.age < 21
         ORDER BY
             r.pinned DESC
         "#,

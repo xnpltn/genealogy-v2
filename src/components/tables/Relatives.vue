@@ -35,6 +35,12 @@ function toggleNoteSection(id: number) {
   stateStore.setShowNotesToTrue()
   resetState()
 }
+
+function toggleEditView(id: number) {
+  stateStore.changeActiveRelativeId(id)
+  stateStore.activeTab = 4
+  stateStore.showNotes = false
+}
 </script>
 
 <template>
@@ -58,8 +64,8 @@ function toggleNoteSection(id: number) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="relative in relatives" :key="relative.id" @click="toggleNoteSection(relative.id)"
-          class="data-grid__row" :class="{
+        <tr @dblclick="toggleEditView(relative.id)" v-for="relative in relatives" :key="relative.id"
+          @click="toggleNoteSection(relative.id)" class="data-grid__row" :class="{
             'data-grid__row--light': !stateStore.darkTheme,
             'data-grid__row--dark': stateStore.darkTheme,
             'data-grid__row--selected': stateStore.activeRelativeId == relative.id

@@ -7,6 +7,8 @@ import AddNewForm from "./components/AddNewForm.vue";
 import NoteSection from "./components/NoteSection.vue";
 import EditView from "./components/EditView.vue";
 import ErrorModal from "./components/ErrorModal.vue";
+import SuccessModal from "./components/SuccessModal.vue";
+
 import AboutModal from "./components/AboutModal.vue";
 import { useStateStore } from "./store/state";
 import { watch } from 'vue'
@@ -32,6 +34,7 @@ watch(
 <template>
   <AboutModal />
   <ErrorModal />
+  <SuccessModal/>
   <main class="container">
     <Aside />
     <NoteSection v-if="stateStore.showNotes && stateStore.hasActiveRelative" />

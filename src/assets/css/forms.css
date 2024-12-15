@@ -81,10 +81,9 @@
 
 .image-container {
   display: grid;
+  grid-template-rows: 1fr 1fr;
 }
 
-
-.image-section {}
 
 .input-label {
   font-size: var(--size-xs);

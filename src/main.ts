@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import './assets/css/main.css'
 import './assets/css/tables.css'
 import './assets/css/forms.css'
-import './assets/css/components/notessection.css'
 
 import App from "./App.vue";
 import { createPinia } from "pinia";

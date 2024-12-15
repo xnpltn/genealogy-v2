@@ -64,9 +64,10 @@ pub async fn update_relative(
             state = $18,
             address = $19,
             city = $20,
-            zipcode = $21
+            zipcode = $21,
+            maiden_name= $22
         WHERE 
-            id = $20
+            id = $23
         ;
     "#,
     )
@@ -89,9 +90,10 @@ pub async fn update_relative(
     .bind(relative.father_id)
     .bind(relative.state)
     .bind(relative.address)
-    .bind(relative.id)
     .bind(relative.city)
     .bind(relative.zipcode)
+    .bind(relative.maiden_name)
+    .bind(relative.id)
     .execute(pool.deref())
     .await
     .map_err(|e| {

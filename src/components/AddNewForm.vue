@@ -26,11 +26,12 @@ function save() {
   let re = newRelative as CreateRelativeParams
 
   invoke("create_relative", { newRelative: re }).then((rel) => {
-    stateStore.activeTab = 0
     let relative = rel as { id: number }
     if (chosenImage.value.length && relative.id > 0) {
       imagesStore.createImage(chosenImage.value, relative.id)
     }
+    stateStore.changeActiveRelativeId( relative.id)
+    stateStore.activeTab = 4
   }).catch(e => {
     if (`${e}`.toLowerCase().includes("invalid args")) {
       errorValue.value = "Error Occured while creating relative. Check if All required fields are present. (first and last names)"
@@ -62,6 +63,8 @@ function uploadImage() {
             <FormInput title="First Name" typ="text" name="firstName" v-model="newRelative.firstName" />
             <FormInput title="Middle Name" typ="text" name="middleName" v-model="newRelative.middleName" />
             <FormInput title="Last Name" typ="text" name="lastName" v-model="newRelative.lastName" />
+            <FormInput v-if="newRelative.sex == 'female'" title="Maiden Name" typ="text" name="maidenName"
+              v-model="newRelative.maidenName" />
             <FormSelect v-model="newRelative.sex" name="sex" label="Sex"
               :options="[{ value: 'male', name: 'Male' }, { value: 'female', name: 'Female' }]" />
             <FormInput title="Birthday" typ="text" name="birthday" v-model="newRelative.birthday" />
@@ -74,8 +77,8 @@ function uploadImage() {
             <FormInput title="Phone" typ="text" name="phone" v-model="newRelative.phone" />
             <FormInput title="State" typ="text" name="state" v-model="newRelative.state" />
             <FormInput title="Address" typ="text" name="address" v-model="newRelative.address" />
-            <FormInput type="text" name="city" v-model="newRelative.city" title="City" />
             <FormInput type="text" name="zipcode" v-model="newRelative.zipcode" title="zipcode" />
+            <FormInput type="text" name="city" v-model="newRelative.city" title="City" />
           </div>
 
           <!-- parents -->

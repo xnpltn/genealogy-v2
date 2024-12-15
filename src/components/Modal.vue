@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ model_open: boolean, title?: string, cancelTitle?: string }>()
+defineProps<{ model_open: boolean, title?: string, cancelTitle?: string }>()
 const emits = defineEmits(['close-modal'])
 
 function closeModal() {
@@ -16,7 +16,7 @@ const stateStore = useStateStore()
   <div class="modal" v-if="model_open">
     <div class="modal__container" :class="{ 'modal__container-dark': stateStore.darkTheme }">
       <div class="model__header">
-        <div class="modal__title" v-if="title?.length">
+        <div class="modal__title" v-if="title?.length" :class="{ 'modal__title-dark': stateStore.darkTheme }">
           <h1>{{ title }}</h1>
         </div>
         <button class="cancelButton" @click="closeModal">{{ cancelTitle || "Close" }}</button>
@@ -73,11 +73,16 @@ const stateStore = useStateStore()
   text-align: center !important;
 }
 
+
 .modal__title h1 {
   margin: 0 !important;
   font-size: 1.5rem !important;
   font-weight: bold !important;
   color: var(--clr-dark) !important;
+}
+
+.modal__title-dark h1 {
+  color: var(--clr-light) !important;
 }
 
 .cancelButton {

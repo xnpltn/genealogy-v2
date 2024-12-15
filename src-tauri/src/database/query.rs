@@ -291,14 +291,14 @@ pub fn get_all_relatives() -> String {
 
 pub fn get_female_relatives() -> String {
     let query = r#"
-        SELECT 
+        select 
             *
-        FROM 
+        from 
             relative
-        WHERE
-            LOWER(sex) = LOWER('female') AND hotness > 0
-        ORDER BY
-            pinned DESC
+        where
+            lower(sex) = lower('female') and age < 21
+        order by
+            pinned desc
         ;
     "#;
 
@@ -550,6 +550,25 @@ pub fn get_images_for_relative() -> String {
         SELECT * FROM image WHERE relative_id = $1
         ORDER BY created_at DESC
         ;
+    "#;
+    query.to_string()
+}
+
+pub fn check_maiden_name() -> String {
+    let query = r#"
+    SELECT COUNT(*) 
+    FROM pragma_table_info('relative') 
+    WHERE name = 'maiden_name';
+    "#;
+    query.to_string()
+}
+
+pub fn add_maiden_name_column() -> String {
+    let query = r#"
+        
+    ALTER TABLE relative
+    ADD COLUMN maiden_name TEXT;
+
     "#;
     query.to_string()
 }

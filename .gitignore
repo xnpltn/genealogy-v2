@@ -26,3 +26,4 @@ dist-ssr
 build.sh
 Dockerfile
 todo.txt
+release*

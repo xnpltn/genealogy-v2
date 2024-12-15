@@ -41,6 +41,15 @@ pub async fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
         sqlx::query(&database::query::create_tables())
             .execute(&pool)
             .await?;
+        let count_: (i64,) = sqlx::query_as(&database::query::check_maiden_name())
+            .fetch_one(&pool)
+            .await?;
+        if count_.0 < 1 {
+            sqlx::query(&database::query::add_maiden_name_column())
+                .execute(&pool)
+                .await?;
+        }
+
         tauri::Builder::default()
             .plugin(tauri_plugin_dialog::init())
             .plugin(tauri_plugin_shell::init())

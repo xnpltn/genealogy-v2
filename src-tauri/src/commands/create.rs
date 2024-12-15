@@ -38,13 +38,13 @@ pub async fn create_relative(
     let rel: types::CreatedRelative = sqlx::query_as(
         r#"
     INSERT INTO relative (
-        sameness, lost_reason, sex, birthday, died_at, fname, mname, lname, 
+        sameness, lost_reason, sex, birthday, died_at, fname, mname, lname, maiden_name, 
         phone, email, pinned, hotness, crazy, swarthy, employable, 
         mother_id, father_id, state, address, city, zipcode
     ) 
     VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,$21
+        $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22
     ) RETURNING id;
     "#,
     )
@@ -56,6 +56,7 @@ pub async fn create_relative(
     .bind(new_relative.first_name)
     .bind(new_relative.middle_name)
     .bind(new_relative.last_name)
+    .bind(new_relative.maiden_name)
     .bind(new_relative.phone)
     .bind(new_relative.email)
     .bind(new_relative.pinned)

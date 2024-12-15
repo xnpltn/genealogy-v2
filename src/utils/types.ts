@@ -5,6 +5,7 @@ export type RelativeIndividual = {
   firstName: string;
   middleName: string | null;
   lastName: string;
+  maidenName: string | null;
   id: number;
   name: string;
   age: number | null;
@@ -64,6 +65,7 @@ export type CreateRelativeParams = {
   firstName: string;
   middleName: string;
   lastName: string;
+  maidenName: string;
   sex: string;
   birthday: string | null;
   diedAt: string | null
@@ -90,6 +92,7 @@ export type UpdateRelativeParams = {
   firstName: string;
   middleName: string;
   lastName: string;
+  maidenName: string | null;
   sex: string;
   birthday: string | null;
   sameness: number | null;

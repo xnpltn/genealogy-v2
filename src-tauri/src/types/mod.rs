@@ -21,6 +21,7 @@ pub struct RelativeIndividual {
     pub middle_name: Option<String>,
     #[sqlx(rename = "lname")]
     pub last_name: String,
+    pub maiden_name: Option<String>,
     pub birthday: Option<String>,
     pub age: Option<u32>,
     pub sameness: Option<f32>,
@@ -87,6 +88,7 @@ pub struct CreateRelativeParams {
     pub first_name: String,
     pub middle_name: Option<String>,
     pub last_name: String,
+    pub maiden_name: Option<String>,
     pub birthday: Option<String>,
     pub died_at: Option<String>,
     pub sameness: Option<f32>,
@@ -114,6 +116,7 @@ pub struct UpdateRelativeParams {
     pub first_name: String,
     pub middle_name: Option<String>,
     pub last_name: String,
+    pub maiden_name: Option<String>,
     pub birthday: Option<String>,
     pub died_at: Option<String>,
     pub sameness: Option<f32>,
